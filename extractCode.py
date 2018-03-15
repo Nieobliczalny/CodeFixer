@@ -6,6 +6,9 @@ import database
 import config
 
 def extractBugCode(bugData):
+    if bugData[0] > bugData[2]:
+        #TODO: Implement custom errors
+        raise ValueError
     file = open(bugData[4], 'r')
     lines = file.readlines()
     linesCount = len(lines)
