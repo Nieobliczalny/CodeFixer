@@ -26,8 +26,8 @@ def extractBugCode(bugData):
         raise ValueError
     return ''.join(lines[startLine:endLine])
 
+#Returns code after applied diff, also writes each used diff id in usedDiffs
 def extractFixCode(bugData, bugCode, fileDiff, usedDiffs):
-    #TODO: Reject fixCode if save diff lines used for multiple bugs!
     fileDiffLines = fileDiff.split('\n')
     bugCodeLines = bugCode.split('\n')
     fixCodeLines = []
@@ -38,10 +38,12 @@ def extractFixCode(bugData, bugCode, fileDiff, usedDiffs):
     for fileDiffLine in fileDiffLines:
         if fileDiffLine[0] == '<':
             #Remove case from [2]
-            currentDiffLine += 1
+            if includeFileDiffOutput:
+                currentDiffLine += 1
         elif fileDiffLine[0] == '>':
             #add case from [2]
-            fixCodeLines.append(fileDiffLine[2:])
+            if includeFileDiffOutput:
+                fixCodeLines.append(fileDiffLine[2:])
         elif fileDiffLine[0] != '-':
             #Do nothing on ---, break between A and D
             #new diff, extract line number
@@ -59,6 +61,9 @@ def extractFixCode(bugData, bugCode, fileDiff, usedDiffs):
                 while currentDiffLine < line:
                     fixCodeLines.append(bugCodeLines[currentDiffLine])
                     currentDiffLine += 1
+                includeFileDiffOutput = True
+            else:
+                includeFileDiffOutput = False
     while currentDiffLine < len(bugCodeLines):
         fixCodeLines.append(bugCodeLines[currentDiffLine])
         currentDiffLine += 1

@@ -210,6 +210,16 @@ int main(void)
         self.assertEqual('7d7', usedDiffs[0])
         self.assertEqual('7a7', usedDiffs[1])
         self.assertEqual('10c10', usedDiffs[2])
+        
+    def testCodeFixExtractFailureNoDiff(self):
+        bugData = self.getCorrectBugDataFileMiddle()
+        bugCode = self.getBugCodeFileMiddle()
+        usedDiffs = []
+        expectedFixedCode = bugCode
+        fileDiff = self.getFileDiff(bugData[2] + 20, [], ['    a = 3;'])
+        fixedCode = extractCode.extractFixCode(bugData, bugCode, fileDiff, usedDiffs)
+        self.assertEqual(expectedFixedCode, fixedCode)
+        self.assertEqual(0, len(usedDiffs))
 
 if __name__ == '__main__':
     unittest.main()
