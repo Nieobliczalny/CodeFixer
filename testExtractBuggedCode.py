@@ -137,6 +137,7 @@ int main(void)
     def testCodeFixExtractSuccessRemove(self):
         bugData = self.getCorrectBugDataFileMiddle()
         bugCode = self.getBugCodeFileMiddle()
+        usedDiffs = []
         expectedFixedCode = """int main(void)
 {
     int a;
@@ -145,12 +146,15 @@ int main(void)
     {
 """
         fileDiff = self.getFileDiff(bugData[0], [], ['    a = 3;'])
-        fixedCode = extractCode.extractFixCode(bugData, bugCode, fileDiff)
+        fixedCode = extractCode.extractFixCode(bugData, bugCode, fileDiff, usedDiffs)
         self.assertEqual(expectedFixedCode, fixedCode)
+        self.assertEqual(1, len(usedDiffs))
+        self.assertEqual('8d8', usedDiffs[0])
     
     def testCodeFixExtractSuccessAdd(self):
         bugData = self.getCorrectBugDataFileMiddle()
         bugCode = self.getBugCodeFileMiddle()
+        usedDiffs = []
         expectedFixedCode = """int main(void)
 {
     int a;
@@ -161,12 +165,15 @@ int main(void)
     {
 """
         fileDiff = self.getFileDiff(bugData[0], ['    a = 4;'], [])
-        fixedCode = extractCode.extractFixCode(bugData, bugCode, fileDiff)
+        fixedCode = extractCode.extractFixCode(bugData, bugCode, fileDiff, usedDiffs)
         self.assertEqual(expectedFixedCode, fixedCode)
+        self.assertEqual(1, len(usedDiffs))
+        self.assertEqual('7a7', usedDiffs[0])
     
     def testCodeFixExtractSuccessChange(self):
         bugData = self.getCorrectBugDataFileMiddle()
         bugCode = self.getBugCodeFileMiddle()
+        usedDiffs = []
         expectedFixedCode = """int main(void)
 {
     int a;
@@ -176,12 +183,15 @@ int main(void)
     {
 """
         fileDiff = self.getFileDiff(bugData[0], ['    a = 1;'], ['    a = 3;'])
-        fixedCode = extractCode.extractFixCode(bugData, bugCode, fileDiff)
+        fixedCode = extractCode.extractFixCode(bugData, bugCode, fileDiff, usedDiffs)
         self.assertEqual(expectedFixedCode, fixedCode)
+        self.assertEqual(1, len(usedDiffs))
+        self.assertEqual('8c8', usedDiffs[0])
     
     def testCodeFixExtractSuccessAllChanges(self):
         bugData = self.getCorrectBugDataFileMiddle()
         bugCode = self.getBugCodeFileMiddle()
+        usedDiffs = []
         expectedFixedCode = """int main(void)
 {
     int a, b;
@@ -194,8 +204,12 @@ int main(void)
         fileDiff = self.getFileDiff(bugData[0] - 1, [], ['    int a;'])
         fileDiff += "\n" + self.getFileDiff(bugData[0], ['    int a, b;', '    b = 2;'], [])
         fileDiff += "\n" + self.getFileDiff(bugData[0] + 2, ['    if (a != 0)'], ['    if (a == 0)'])
-        fixedCode = extractCode.extractFixCode(bugData, bugCode, fileDiff)
+        fixedCode = extractCode.extractFixCode(bugData, bugCode, fileDiff, usedDiffs)
         self.assertEqual(expectedFixedCode, fixedCode)
+        self.assertEqual(3, len(usedDiffs))
+        self.assertEqual('7d7', usedDiffs[0])
+        self.assertEqual('7a7', usedDiffs[1])
+        self.assertEqual('10c10', usedDiffs[2])
 
 if __name__ == '__main__':
     unittest.main()
