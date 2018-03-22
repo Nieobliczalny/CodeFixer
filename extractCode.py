@@ -2,7 +2,8 @@
 import re
 
 #Local modules
-import database
+import ccdatabase
+import cfdatabase
 import config
 
 def extractBugCode(bugData):
@@ -71,8 +72,9 @@ def extractFixCode(bugData, bugCode, fileDiff, usedDiffs):
             
 
 #TODO: Tests!
-conn = database.connect(config.dbFile)
-bugs = database.getAllBugs(conn)
+conn = ccdatabase.connect(config.ccDbFile)
+bugs = ccdatabase.getAllBugs(conn)
+conn2 = cfdatabase.connect(config.cfDbFile)
 diff18 = """8d7
 < 	a = 3;"""
 diff19 = """10c10
@@ -81,7 +83,7 @@ diff19 = """10c10
 > 	if (a != 0)"""
 for bug in bugs:
     print(bug)
-    data = database.getBugData(conn, bug[0])
+    data = ccdatabase.getBugData(conn, bug[0])
     print(data)
     bugCode = extractBugCode(data)
     print(bugCode)

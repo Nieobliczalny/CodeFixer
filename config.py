@@ -1,3 +1,4 @@
 noOfLinesBefore = 3
 noOfLinesAfter = 3
-dbFile = '/home/krystian/.codechecker/Default.sqlite'
+ccDbFile = '/home/krystian/.codechecker/Default.sqlite'
+cfDbFile = '/home/krystian/Desktop/cf.sqlite'
