@@ -2,6 +2,8 @@ import unittest
 
 import extractCode
 
+#TODO: Extract testdata path to test config
+
 class TestCodeExtract(unittest.TestCase):
     def getBugCodeFileMiddle(self):
         return """int main(void)
@@ -16,43 +18,43 @@ class TestCodeExtract(unittest.TestCase):
     def getCorrectBugDataFileMiddle(self):
         bugStartLine = 8
         bugEndLine = 8
-        filepath = 'testdata/bugcode.cpp'
+        filepath = './testdata/bugcode.cpp'
         return (bugStartLine, 0, bugEndLine, 0, filepath)
     
     def getCorrectBugDataFileBegin(self):
         bugStartLine = 1
         bugEndLine = 1
-        filepath = 'testdata/bugcode.cpp'
+        filepath = './testdata/bugcode.cpp'
         return (bugStartLine, 0, bugEndLine, 0, filepath)
     
     def getCorrectBugDataFileEnd(self):
         bugStartLine = 16
         bugEndLine = 16
-        filepath = 'testdata/bugcode.cpp'
+        filepath = './testdata/bugcode.cpp'
         return (bugStartLine, 0, bugEndLine, 0, filepath)
     
     def getCorrectBugDataFileMultiLine(self):
         bugStartLine = 7
         bugEndLine = 9
-        filepath = 'testdata/bugcode.cpp'
+        filepath = './testdata/bugcode.cpp'
         return (bugStartLine, 0, bugEndLine, 0, filepath)
 
     def getIncorrectBugDataFileNotExist(self):
         bugStartLine = 8
         bugEndLine = 8
-        filepath = 'testdata/bugcode_notexists.cpp'
+        filepath = './testdata/bugcode_notexists.cpp'
         return (bugStartLine, 0, bugEndLine, 0, filepath)
     
     def getIncorrectBugDataLineOutOfRange(self):
         bugStartLine = 20
         bugEndLine = 21
-        filepath = 'testdata/bugcode.cpp'
+        filepath = './testdata/bugcode.cpp'
         return (bugStartLine, 0, bugEndLine, 0, filepath)
     
     def getIncorrectBugDataLineBoundariesSwap(self):
         bugStartLine = 9
         bugEndLine = 7
-        filepath = 'testdata/bugcode.cpp'
+        filepath = './testdata/bugcode.cpp'
         return (bugStartLine, 0, bugEndLine, 0, filepath)
     
     def getFileDiff(self, lineNo, toAdd, toRemove):
