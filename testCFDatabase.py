@@ -20,14 +20,14 @@ class TestCFDatabase(unittest.TestCase):
         self.assertEqual(len(cursor.fetchall()), 0)
         conn.close()
         dbFile.unlink()
-"""
+
     def testDatabaseOpenExistingSuccess(self):
         dbPath = "./testdata/test.sqlite"
         conn = cfdatabase.connect(dbPath)
         cursor = conn.cursor()
-        cursor.execute("SELECT id FROM fix_data LIMIT 1")
+        cursor.execute("SELECT id FROM fix_data")
         self.assertGreater(len(cursor.fetchall()), 0)
         conn.close()
-"""
+
 if __name__ == '__main__':
     unittest.main()

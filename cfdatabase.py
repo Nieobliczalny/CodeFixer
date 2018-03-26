@@ -12,7 +12,7 @@ def connect(db):
 def create(db):
     conn = sqlite3.connect(db)
     fixDataTable = """CREATE TABLE IF NOT EXISTS fix_data (
-        id integer PRIMARY KEY,
+        id integer PRIMARY KEY AUTOINCREMENT,
         bugged_code text NOT NULL,
         fixed_code text NOT NULL,
         checker text NOT NULL);"""
