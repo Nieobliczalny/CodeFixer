@@ -1,6 +1,8 @@
 import config
 
 class VCSProvider():
+    def __init__(self, repoDir):
+        raise NotImplementedError
     def getAllVersions(self, tag):
         raise NotImplementedError
     def checkout(self, version):

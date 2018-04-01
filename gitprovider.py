@@ -1,12 +1,12 @@
-import config
 import vcsprovider
 
 from git import Repo
 
-#TODO: Create constructor and field for repo
 class GitProvider(vcsprovider.VCSProvider):
+    def __init__(self, repoDir):
+        self.repo = Repo(repoDir)
+       
     def getAllVersions(self, tag):
-        repo = Repo(config.repo)
-        versions = list(repo.iter_commits(tag))
+        versions = list(self.repo.iter_commits(tag))
         hashes = [x.hexsha for x in versions]
         return hashes
