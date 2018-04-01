@@ -7,7 +7,6 @@ from git import Repo
 class GitProvider(vcsprovider.VCSProvider):
     def getAllVersions(self, tag):
         repo = Repo(config.repo)
-        return list(repo.iter_commits(tag, max_count=50))
-
-gp = GitProvider()
-print(gp.getAllVersions('master'))
+        versions = list(repo.iter_commits(tag))
+        hashes = [x.hexsha for x in versions]
+        return hashes
