@@ -1,6 +1,6 @@
 noOfLinesBefore = 3
 noOfLinesAfter = 3
-ccDbFile = '~/.codechecker/Default.sqlite'
+ccDbFile = '/home/Krystian/.codechecker/Default.sqlite'
 cfDbFile = '/mnt/c/Users/Krystian/Desktop/tmp/cf.sqlite'
 repo = '/mnt/c/Users/Krystian/Desktop/tmp/example'
 ccRunName = 'example'

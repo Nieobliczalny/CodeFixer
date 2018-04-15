@@ -131,7 +131,6 @@ int main(void)
     
     def testCodeExtractLineBoundariesSwapFailure(self):
         bugData = self.getIncorrectBugDataLineBoundariesSwap()
-        print(bugData)
         with self.assertRaises(ValueError):
             extractedCode = extractCode.extractBugCode(bugData)
         
