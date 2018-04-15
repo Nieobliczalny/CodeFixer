@@ -20,6 +20,6 @@ class CodeChecker():
         proc_stdout = process.communicate()[0].strip()
         return proc_stdout
 
-cc = CodeChecker()
+#cc = CodeChecker()
 #cc.check(True)
 #cc.store("0000000")

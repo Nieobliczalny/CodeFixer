@@ -1,11 +1,11 @@
 noOfLinesBefore = 3
 noOfLinesAfter = 3
-ccDbFile = '/home/krystian/.codechecker/Default.sqlite'
-cfDbFile = '/home/krystian/Desktop/cf.sqlite'
-repo = '/home/krystian/Desktop/example'
+ccDbFile = '~/.codechecker/Default.sqlite'
+cfDbFile = '/mnt/c/Users/Krystian/Desktop/tmp/cf.sqlite'
+repo = '/mnt/c/Users/Krystian/Desktop/tmp/example'
 ccRunName = 'example'
 codeCheckerPath = '~/codechecker'
 codeCheckerRelativeBinPath = '/build/CodeChecker/bin'
 codeCheckerRelativeVenv = '/venv/bin/activate'
 tmpDir = '/tmp/codefixer'
-test_repo = '/home/krystian/Desktop/codefixer/testdata'
+test_repo = '/mnt/c/Users/Krystian/Desktop/tmp/codefixer/testdata'

@@ -72,6 +72,7 @@ def extractFixCode(bugData, bugCode, fileDiff, usedDiffs):
             
 
 #TODO: Tests!
+'''
 conn = ccdatabase.connect(config.ccDbFile)
 bugs = ccdatabase.getAllBugs(conn)
 conn2 = cfdatabase.connect(config.cfDbFile)
@@ -95,3 +96,4 @@ for bug in bugs:
     print(fixed)
     print(usedDiffs)
 conn.close()
+'''
