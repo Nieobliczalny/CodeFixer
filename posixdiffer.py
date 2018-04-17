@@ -63,4 +63,7 @@ def diff(a, b):
     diff = []
     for line in generator:
         diff.append(line)
-    return (''.join(diff))[:-1]
+    diffText = ''.join(diff)
+    if len(diffText) > 0 and diffText[-1] == '\n':
+        diffText = diffText[:-1]
+    return diffText
