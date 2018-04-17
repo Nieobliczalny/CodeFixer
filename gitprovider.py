@@ -10,3 +10,15 @@ class GitProvider(vcsprovider.VCSProvider):
         versions = list(self.repo.iter_commits(tag))
         hashes = [x.hexsha for x in versions]
         return hashes
+    
+    def checkout(self, version):
+        self.repo.head.reference = self.repo.commit(version)
+    
+    def getTree(self):
+        return self.repo.head.commit.tree
+    
+    def getFileContents(self, file, version, charset = 'ascii'):
+        commit = self.repo.commit(version)
+        blob = commit.tree[file]
+        contents = blob.data_stream.read()
+        return contents.decode(charset)

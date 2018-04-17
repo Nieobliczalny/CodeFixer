@@ -7,7 +7,9 @@ class VCSProvider():
         raise NotImplementedError
     def checkout(self, version):
         raise NotImplementedError
-    def getFileContents(self, file, version):
+    def getTree(self):
+        raise NotImplementedError
+    def getFileContents(self, file, version, charset = 'ascii'):
         raise NotImplementedError
     def createBranch(self, name, version):
         raise NotImplementedError
