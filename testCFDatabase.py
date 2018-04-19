@@ -2,32 +2,29 @@ import unittest
 import sqlite3
 from pathlib import Path
 
-import cfdatabase
+from cfdatabase import CFDatabase
 
+#TODO: Add test for clean and store
 class TestCFDatabase(unittest.TestCase):
     def testDatabaseOpenCreateSuccess(self):
         dbPath = "./testdata/testtmp.sqlite"
         dbFile = Path(dbPath)
         if dbFile.is_file():
             dbFile.unlink()
-        conn = cfdatabase.connect(dbPath)
-        conn.close()
+        db = CFDatabase(dbPath)
         dbFile = Path(dbPath)
         self.assertTrue(dbFile.is_file())
-        conn = sqlite3.connect(dbPath)
-        cursor = conn.cursor()
-        cursor.execute("SELECT id FROM fix_data LIMIT 1")
-        self.assertEqual(len(cursor.fetchall()), 0)
-        conn.close()
+        del db
+        db = CFDatabase(dbPath)
+        self.assertEqual(len(db.getAllFixData()), 0)
+        del db
         dbFile.unlink()
 
     def testDatabaseOpenExistingSuccess(self):
         dbPath = "./testdata/test.sqlite"
-        conn = cfdatabase.connect(dbPath)
-        cursor = conn.cursor()
-        cursor.execute("SELECT id FROM fix_data")
-        self.assertGreater(len(cursor.fetchall()), 0)
-        conn.close()
+        db = CFDatabase(dbPath)
+        self.assertGreater(len(db.getAllFixData()), 0)
+        del db
 
 if __name__ == '__main__':
     unittest.main()

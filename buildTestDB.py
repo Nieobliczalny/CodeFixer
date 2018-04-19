@@ -1,5 +1,5 @@
 from ccdatabase import CCDatabase
-import cfdatabase
+from cfdatabase import CFDatabase
 from codechecker import CodeChecker
 import config
 import extractCode
@@ -15,9 +15,9 @@ class TestDbBuilder():
         self.commits = self.vcs.getAllVersions(config.train_branch)
     
     def prepareDb(self, clean = False):
-        self.db = cfdatabase.connect(config.train_db)
-        #if clean:
-        #    self.db.clean()
+        self.db = CFDatabase(config.train_db)
+        if clean:
+            self.db.clean()
     
     def checkoutToNextVersion(self):
         self.currentCommitIndex = self.currentCommitIndex - 1
@@ -57,14 +57,17 @@ class TestDbBuilder():
         CodeChecker().check(True)
         CodeChecker().store(self.commits[self.currentCommitIndex])
     
+    def findAndStoreFixDataForVersion(self):
+        ids = self.getDiffResolvedIds()
+        for id in ids:
+            if self.extractCode(id):
+                #self.db.store(bugCode, fixCode, checker)
+                pass
+        CodeChecker().store(self.commits[self.currentCommitIndex])
+    
     def iterateThroughVcsHistory(self):
         while self.checkoutToNextVersion():
-            ids = self.getDiffResolvedIds()
-            for id in ids:
-                if self.extractCode(id):
-                    #cfdatabase.store()
-                    pass
-            CodeChecker().store(self.commits[self.currentCommitIndex])
+            self.findAndStoreFixDataForVersion()
     
     def build(self):
         self.prepareEnv()
