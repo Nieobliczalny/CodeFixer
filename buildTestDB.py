@@ -1,4 +1,4 @@
-import ccdatabase
+from ccdatabase import CCDatabase
 import cfdatabase
 from codechecker import CodeChecker
 import config
@@ -9,7 +9,7 @@ import posixdiffer
 class TestDbBuilder():
     def __init__(self):
         self.vcs = GitProvider(config.train_repo)
-        self.ccdb = ccdatabase.connect(config.ccDbFile)
+        self.ccdb = CCDatabase(config.ccDbFile)
     
     def loadCommitList(self):
         self.commits = self.vcs.getAllVersions(config.train_branch)
@@ -36,7 +36,7 @@ class TestDbBuilder():
     
     #TODO: Return bug and fix code with checker name (and bug path no!)
     def extractCode(self, id):
-        bugData = ccdatabase.getAllBugs(self.ccdb)
+        bugData = self.ccdb.getAllBugs()
         bugCodeFragment = extractCode.extractBugCode(bugData)
         fullCodeWithBug = self.vcs.getFileContents(bugData[4], self.commits[self.currentCommitIndex + 1])
         fullCodeWithoutBug = self.vcs.getFileContents(bugData[4], self.commits[self.currentCommitIndex])
