@@ -2,14 +2,17 @@ from ccdatabase import CCDatabase
 from cfdatabase import CFDatabase
 from codechecker import CodeChecker
 import config
-import extractCode
+from extractCode import CodeExtractor
 from gitprovider import GitProvider
+import entities
 import posixdiffer
+import os
 
 class TestDbBuilder():
     def __init__(self):
         self.vcs = GitProvider(config.train_repo)
         self.ccdb = CCDatabase(config.ccDbFile)
+        self.codeChecker = CodeChecker(config.train_repo)
     
     def loadCommitList(self):
         self.commits = self.vcs.getAllVersions(config.train_branch)
@@ -27,48 +30,78 @@ class TestDbBuilder():
         return True
     
     def getDiffResolvedIds(self):
-        CodeChecker().check(True)
-        resolved = CodeChecker().diffResolved(config.ccRunName, config.tmpDir)
+        self.codeChecker.check(True)
+        resolved = self.codeChecker.diffResolved(config.ccRunName, config.tmpDir)
         ids = []
         for bug in resolved:
             ids.append(bug['reportId'])
         return ids
     
-    #TODO: Return bug and fix code with checker name (and bug path no!)
+    def convertFilePathToRepoRelativePath(self, path):
+        return os.path.relpath(path, config.train_repo)
+    
     def extractCode(self, id):
-        bugData = self.ccdb.getAllBugs()
-        bugCodeFragment = extractCode.extractBugCode(bugData)
-        fullCodeWithBug = self.vcs.getFileContents(bugData[4], self.commits[self.currentCommitIndex + 1])
-        fullCodeWithoutBug = self.vcs.getFileContents(bugData[4], self.commits[self.currentCommitIndex])
+        bugData = self.ccdb.getBugData(id)
+        fileRelativePath = self.convertFilePathToRepoRelativePath(bugData.getFile())
+        fullCodeWithBug = self.vcs.getFileContents(fileRelativePath, self.commits[self.currentCommitIndex + 1])
+        fullCodeWithoutBug = self.vcs.getFileContents(fileRelativePath, self.commits[self.currentCommitIndex])
         diff = posixdiffer.diff(fullCodeWithBug, fullCodeWithoutBug)
-        usedDiffs = []
-        fixCodeFragment = extractCode.extractFixCode(bugData, bugCodeFragment, diff, usedDiffs)
+        
+        extractor = CodeExtractor(bugData)
+        extractor.loadCodeFromText(fullCodeWithBug)
+        extractor.extractBugCode()
+        extractor.loadDiff(diff)
+        extractor.extractFixCode()
+        bugCodeFragment = extractor.getBugCodeFragment()
+        fixCodeFragment = extractor.getFixCodeFragment()
+        usedDiffs = extractor.getUsedDiffs()
         #Easy version - ignore bug if none or more than one diff used to fix
         #TODO: Possible improvement here
         if len(usedDiffs) != 1:
-            return False
-        return True
+            return None
+        return entities.FixData(bugCodeFragment, fixCodeFragment, bugData[4])
 
-    def prepareEnv(self):
+    def prepareEnv(self, clean = False):
+        print('Loading commit list... ', end = '')
         self.loadCommitList()
-        self.prepareDb()
+        print('done')
+        print('Preparing train db... ', end = '')
+        self.prepareDb(clean)
+        print('done')
+        print('Checking out to root... ', end = '')
         self.currentCommitIndex = len(self.commits)
         self.checkoutToNextVersion()
-        CodeChecker().check(True)
-        CodeChecker().store(self.commits[self.currentCommitIndex])
+        print('done')
+        print('Initial analysis... ', end = '')
+        self.codeChecker.check(True)
+        print('done')
+        print('Storing initial results... ', end = '')
+        self.codeChecker.store(self.commits[self.currentCommitIndex])
+        print('done')
     
     def findAndStoreFixDataForVersion(self):
+        print('Getting list of resolved bugs for version', self.commits[self.currentCommitIndex],'... ', end = '')
         ids = self.getDiffResolvedIds()
+        print('done')
         for id in ids:
-            if self.extractCode(id):
-                #self.db.store(bugCode, fixCode, checker)
-                pass
-        CodeChecker().store(self.commits[self.currentCommitIndex])
+            print('Parsing data for bug (#', id, ')... ', sep = '', end = '')
+            fixData = self.extractCode(id)
+            print('done')
+            if fixData is not None:
+                print('Storing fixData... ', end = '')
+                self.db.store(fixData.getBugCode(), fixData.getFixCode(), fixData.getChecker())
+                print('done')
+        print('Storing CodeChecker results for this version... ', end = '')
+        self.codeChecker.store(self.commits[self.currentCommitIndex])
+        print('done')
     
     def iterateThroughVcsHistory(self):
         while self.checkoutToNextVersion():
             self.findAndStoreFixDataForVersion()
     
-    def build(self):
-        self.prepareEnv()
+    def build(self, clean = False):
+        self.prepareEnv(clean)
         self.iterateThroughVcsHistory()
+
+builder = TestDbBuilder()
+builder.build(True)

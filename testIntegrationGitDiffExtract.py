@@ -6,6 +6,7 @@ from extractCode import CodeExtractor
 import config
 import random
 import string
+from entities import BugData
 
 class TestIntegrationGitDiffExtract(unittest.TestCase):
     def splitLinesWithRetainingLineFeed(self, text):
@@ -18,7 +19,7 @@ class TestIntegrationGitDiffExtract(unittest.TestCase):
         bugStartLine = 8
         bugEndLine = 8
         filepath = 'bugcode2.cpp'
-        return [bugStartLine, 0, bugEndLine, 0, filepath]
+        return BugData(bugStartLine, bugEndLine, filepath, '')
     
     def getRandomName(self):
         return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8))

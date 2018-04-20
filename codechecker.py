@@ -5,11 +5,17 @@ import sys
 import json
 
 class CodeChecker():
+    def __init__(self, repo = None):
+        if repo is None:
+            self.repo = config.repo
+        else:
+            self.repo = repo
+    
     def check(self, clean = False):
         makeClean = ''
         if clean:
             makeClean = ' && make clean'
-        cmd = 'CodeChecker check -b "cd ' + config.repo + makeClean + ' && make" -o ' + config.tmpDir
+        cmd = 'CodeChecker check -b "cd ' + self.repo + makeClean + ' && make" -o ' + config.tmpDir
         self.runCmd(cmd)
     
     def store(self, tag):
@@ -18,8 +24,14 @@ class CodeChecker():
     
     def diffResolved(self, baseRun, newRun):
         cmd = 'CodeChecker cmd diff -b ' + baseRun + ' -n ' + newRun + ' --resolved -o json'
-        output = self.runCmd(cmd).decode(sys.stdout.encoding).split('\n', 1)[1]
-        return json.loads(output)
+        stdoutData = self.runCmd(cmd).decode(sys.stdout.encoding)
+        output = stdoutData.split('\n', 1)[1]
+        out = []
+        try:
+            out = json.loads(output)
+        except json.decoder.JSONDecodeError:
+            pass
+        return out
     
     def runCmd(self, cmd):
         command = '. ' + config.codeCheckerPath + config.codeCheckerRelativeVenv + ' && cd ' + config.codeCheckerPath + config.codeCheckerRelativeBinPath + ' && ./' + cmd

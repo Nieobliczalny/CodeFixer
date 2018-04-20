@@ -19,7 +19,7 @@ class CodeExtractor():
         self.usedDiffs = []
     
     def loadCodeFromFile(self):
-        with open(self.bugData[4], 'r') as file:
+        with open(self.bugData.getFile(), 'r') as file:
             self.code = file.readlines()
         pass
     
@@ -35,7 +35,7 @@ class CodeExtractor():
     
     def getStartLine(self):
         #Since indexing starts from 0 (line 1 is at index 0), we subtract 1
-        startLine = self.bugData[0] - config.noOfLinesBefore - 1
+        startLine = self.bugData.getStartLine() - config.noOfLinesBefore - 1
         if startLine < 0:
             startLine = 0
         return startLine
@@ -44,7 +44,7 @@ class CodeExtractor():
         linesCount = len(self.code)
         #Since range end element is excluded when we use [start:end] on array
         #we do not subtract 1 so we include end line also
-        endLine = self.bugData[2] + config.noOfLinesAfter
+        endLine = self.bugData.getEndLine() + config.noOfLinesAfter
         if endLine > linesCount:
             endLine = linesCount
         return endLine
@@ -54,12 +54,12 @@ class CodeExtractor():
         if linesCount < 1:
             #TODO: Implement custom errors
             raise ValueError
-        if self.bugData[0] > self.bugData[2]:
+        if self.bugData.getStartLine() > self.bugData.getEndLine():
             #TODO: Implement custom errors
             raise ValueError
         startLine = self.getStartLine()
         endLine = self.getEndLine()
-        if startLine >= self.bugData[0] or endLine < self.bugData[2]:
+        if startLine >= self.bugData.getStartLine() or endLine < self.bugData.getEndLine():
             #TODO: Implement custom errors
             raise ValueError
         self.bugCodeFragment = self.code[startLine:endLine]

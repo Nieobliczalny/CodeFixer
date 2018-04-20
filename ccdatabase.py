@@ -1,9 +1,10 @@
 import sqlite3
 from pathlib import Path
+from entities import BugData
 
 class CCDatabase():
     connection = None
-    
+
     def __init__(self, path):
         self.connection = self.connect(path)
     
@@ -29,7 +30,6 @@ class CCDatabase():
         return cursor.fetchall()
 
     def getAllBugs(self):
-        #TODO: Include current version of file as filter
         #TODO: Ignore bugs marked as false-positive or intentional
         return self.executeAndFetchAll("SELECT id,detection_status FROM reports WHERE detection_status IN ('new', 'unresolved', 'reopened')")
     
@@ -37,9 +37,9 @@ class CCDatabase():
         return self.executeAndFetchAll("SELECT id FROM reports")
 
     def getBugData(self, bugId):
+        #TODO: Ignore bugs marked as false-positive or intentional
         params = (bugId,)
-        bugData = self.executeAndFetch("SELECT bpe.line_begin, bpe.col_begin, bpe.line_end, bpe.col_end, f.filepath FROM bug_path_events bpe JOIN files f ON bpe.file_id=f.id WHERE bpe.report_id=? ORDER BY bpe.`order` DESC LIMIT 1", params)
-        versionData = self.executeAndFetch("SELECT rh.version_tag FROM reports rp JOIN runs rn ON rp.run_id=rn.id JOIN run_histories rh ON rn.id=rh.run_id WHERE rp.id=? ORDER BY rh.time DESC LIMIT 1", params)
-        allBugData = [bugData[0], bugData[1], bugData[2], bugData[3], bugData[4], versionData[0]]
-        #TODO: Make bugData a class
+        bugData = self.executeAndFetchOne("SELECT bpe.line_begin, bpe.col_begin, bpe.line_end, bpe.col_end, f.filepath FROM bug_path_events bpe JOIN files f ON bpe.file_id=f.id WHERE bpe.report_id=? ORDER BY bpe.`order` DESC LIMIT 1", params)
+        checkerData = self.executeAndFetchOne("SELECT checker_id FROM reports WHERE id=? LIMIT 1", params)
+        allBugData = BugData(bugData[0], bugData[2], bugData[4], checkerData[0])
         return allBugData
