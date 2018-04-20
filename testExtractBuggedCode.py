@@ -1,6 +1,6 @@
 import unittest
 
-import extractCode
+from extractCode import CodeExtractor
 
 #TODO: Extract testdata path to test config
 
@@ -81,13 +81,19 @@ class TestCodeExtract(unittest.TestCase):
     #Tests for extracting bugged code
     def testCodeExtractSuccess(self):
         bugData = self.getCorrectBugDataFileMiddle()
-        extractedCode = extractCode.extractBugCode(bugData)
+        extractor = CodeExtractor(bugData)
+        extractor.loadCodeFromFile()
+        extractor.extractBugCode()
+        extractedCode = extractor.getBugCodeFragment()
         correctCode = self.getBugCodeFileMiddle()
         self.assertEqual(extractedCode, correctCode)
 
     def testCodeExtractFileBeginSuccess(self):
         bugData = self.getCorrectBugDataFileBegin()
-        extractedCode = extractCode.extractBugCode(bugData)
+        extractor = CodeExtractor(bugData)
+        extractor.loadCodeFromFile()
+        extractor.extractBugCode()
+        extractedCode = extractor.getBugCodeFragment()
         correctCode = """#include <iostream>
 
 using namespace std;
@@ -97,7 +103,10 @@ using namespace std;
 
     def testCodeExtractFileEndSuccess(self):
         bugData = self.getCorrectBugDataFileEnd()
-        extractedCode = extractCode.extractBugCode(bugData)
+        extractor = CodeExtractor(bugData)
+        extractor.loadCodeFromFile()
+        extractor.extractBugCode()
+        extractedCode = extractor.getBugCodeFragment()
         correctCode = """        cout << b << endl;
     }
     return 0;
@@ -106,7 +115,10 @@ using namespace std;
 
     def testCodeExtractMultiLineSuccess(self):
         bugData = self.getCorrectBugDataFileMultiLine()
-        extractedCode = extractCode.extractBugCode(bugData)
+        extractor = CodeExtractor(bugData)
+        extractor.loadCodeFromFile()
+        extractor.extractBugCode()
+        extractedCode = extractor.getBugCodeFragment()
         correctCode = """
 int main(void)
 {
@@ -122,23 +134,30 @@ int main(void)
     def testCodeExtractFileNotExistFailure(self):
         bugData = self.getIncorrectBugDataFileNotExist()
         with self.assertRaises(FileNotFoundError):
-            extractedCode = extractCode.extractBugCode(bugData)
+            extractor = CodeExtractor(bugData)
+            extractor.loadCodeFromFile()
+            extractor.extractBugCode()
+            extractedCode = extractor.getBugCodeFragment()
     
     def testCodeExtractLineOutOfRangeFailure(self):
         bugData = self.getIncorrectBugDataLineOutOfRange()
         with self.assertRaises(ValueError):
-            extractedCode = extractCode.extractBugCode(bugData)
+            extractor = CodeExtractor(bugData)
+            extractor.loadCodeFromFile()
+            extractor.extractBugCode()
+            extractedCode = extractor.getBugCodeFragment()
     
     def testCodeExtractLineBoundariesSwapFailure(self):
         bugData = self.getIncorrectBugDataLineBoundariesSwap()
         with self.assertRaises(ValueError):
-            extractedCode = extractCode.extractBugCode(bugData)
+            extractor = CodeExtractor(bugData)
+            extractor.loadCodeFromFile()
+            extractor.extractBugCode()
+            extractedCode = extractor.getBugCodeFragment()
         
     #Tests for extracting fixed code
     def testCodeFixExtractSuccessRemove(self):
         bugData = self.getCorrectBugDataFileMiddle()
-        bugCode = self.getBugCodeFileMiddle()
-        usedDiffs = []
         expectedFixedCode = """int main(void)
 {
     int a;
@@ -147,15 +166,20 @@ int main(void)
     {
 """
         fileDiff = self.getFileDiff(bugData[0], [], ['    a = 3;'])
-        fixedCode = extractCode.extractFixCode(bugData, bugCode, fileDiff, usedDiffs)
+        extractor = CodeExtractor(bugData)
+        extractor.loadCodeFromFile()
+        extractor.extractBugCode()
+        extractor.loadDiff(fileDiff)
+        extractor.extractFixCode()
+        fixedCode = extractor.getFixCodeFragment()
+        usedDiffs = extractor.getUsedDiffs()
+        
         self.assertEqual(expectedFixedCode, fixedCode)
         self.assertEqual(1, len(usedDiffs))
         self.assertEqual('8d8', usedDiffs[0])
     
     def testCodeFixExtractSuccessAdd(self):
         bugData = self.getCorrectBugDataFileMiddle()
-        bugCode = self.getBugCodeFileMiddle()
-        usedDiffs = []
         expectedFixedCode = """int main(void)
 {
     int a;
@@ -166,15 +190,20 @@ int main(void)
     {
 """
         fileDiff = self.getFileDiff(bugData[0], ['    a = 4;'], [])
-        fixedCode = extractCode.extractFixCode(bugData, bugCode, fileDiff, usedDiffs)
+        extractor = CodeExtractor(bugData)
+        extractor.loadCodeFromFile()
+        extractor.extractBugCode()
+        extractor.loadDiff(fileDiff)
+        extractor.extractFixCode()
+        fixedCode = extractor.getFixCodeFragment()
+        usedDiffs = extractor.getUsedDiffs()
+        
         self.assertEqual(expectedFixedCode, fixedCode)
         self.assertEqual(1, len(usedDiffs))
         self.assertEqual('7a7', usedDiffs[0])
     
     def testCodeFixExtractSuccessChange(self):
         bugData = self.getCorrectBugDataFileMiddle()
-        bugCode = self.getBugCodeFileMiddle()
-        usedDiffs = []
         expectedFixedCode = """int main(void)
 {
     int a;
@@ -184,15 +213,20 @@ int main(void)
     {
 """
         fileDiff = self.getFileDiff(bugData[0], ['    a = 1;'], ['    a = 3;'])
-        fixedCode = extractCode.extractFixCode(bugData, bugCode, fileDiff, usedDiffs)
+        extractor = CodeExtractor(bugData)
+        extractor.loadCodeFromFile()
+        extractor.extractBugCode()
+        extractor.loadDiff(fileDiff)
+        extractor.extractFixCode()
+        fixedCode = extractor.getFixCodeFragment()
+        usedDiffs = extractor.getUsedDiffs()
+
         self.assertEqual(expectedFixedCode, fixedCode)
         self.assertEqual(1, len(usedDiffs))
         self.assertEqual('8c8', usedDiffs[0])
     
     def testCodeFixExtractSuccessAllChanges(self):
         bugData = self.getCorrectBugDataFileMiddle()
-        bugCode = self.getBugCodeFileMiddle()
-        usedDiffs = []
         expectedFixedCode = """int main(void)
 {
     int a, b;
@@ -205,7 +239,15 @@ int main(void)
         fileDiff = self.getFileDiff(bugData[0] - 1, [], ['    int a;'])
         fileDiff += "\n" + self.getFileDiff(bugData[0], ['    int a, b;', '    b = 2;'], [])
         fileDiff += "\n" + self.getFileDiff(bugData[0] + 2, ['    if (a != 0)'], ['    if (a == 0)'])
-        fixedCode = extractCode.extractFixCode(bugData, bugCode, fileDiff, usedDiffs)
+
+        extractor = CodeExtractor(bugData)
+        extractor.loadCodeFromFile()
+        extractor.extractBugCode()
+        extractor.loadDiff(fileDiff)
+        extractor.extractFixCode()
+        fixedCode = extractor.getFixCodeFragment()
+        usedDiffs = extractor.getUsedDiffs()
+
         self.assertEqual(expectedFixedCode, fixedCode)
         self.assertEqual(3, len(usedDiffs))
         self.assertEqual('7d7', usedDiffs[0])
@@ -215,10 +257,17 @@ int main(void)
     def testCodeFixExtractFailureNoDiff(self):
         bugData = self.getCorrectBugDataFileMiddle()
         bugCode = self.getBugCodeFileMiddle()
-        usedDiffs = []
         expectedFixedCode = bugCode
         fileDiff = self.getFileDiff(bugData[2] + 20, [], ['    a = 3;'])
-        fixedCode = extractCode.extractFixCode(bugData, bugCode, fileDiff, usedDiffs)
+        
+        extractor = CodeExtractor(bugData)
+        extractor.loadCodeFromFile()
+        extractor.extractBugCode()
+        extractor.loadDiff(fileDiff)
+        extractor.extractFixCode()
+        fixedCode = extractor.getFixCodeFragment()
+        usedDiffs = extractor.getUsedDiffs()
+
         self.assertEqual(expectedFixedCode, fixedCode)
         self.assertEqual(0, len(usedDiffs))
 

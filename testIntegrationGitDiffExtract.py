@@ -2,7 +2,7 @@ import unittest
 
 import posixdiffer
 import gitprovider
-import extractCode
+from extractCode import CodeExtractor
 import config
 import random
 import string
@@ -45,11 +45,14 @@ class TestIntegrationGitDiffExtract(unittest.TestCase):
         diff = posixdiffer.diff(self.splitLinesWithRetainingLineFeed(file1), self.splitLinesWithRetainingLineFeed(file2))
         usedDiffs = []
         bugData = self.getBugData()
-        bugData[4] = config.tmpDir + '/' + self.getRandomName()
-        with open(bugData[4], 'w') as file:
-            file.write(file1)
-        bugCode = extractCode.extractBugCode(bugData)
-        fixCode = extractCode.extractFixCode(bugData, bugCode, diff, usedDiffs)
+        extractor = CodeExtractor(bugData)
+        extractor.loadCodeFromText(file1, '\r\n', '\n')
+        extractor.extractBugCode()
+        extractor.loadDiff(diff)
+        extractor.extractFixCode()
+        bugCode = extractor.getBugCodeFragment()
+        fixCode = extractor.getFixCodeFragment()
+        usedDiffs = extractor.getUsedDiffs()
         expectedOutputFix = """int main(void)
 {
     int a;
@@ -67,6 +70,7 @@ class TestIntegrationGitDiffExtract(unittest.TestCase):
 """
         self.assertEqual(expectedOutputBug, bugCode)
         self.assertEqual(expectedOutputFix, fixCode)
+        self.assertEqual(1, len(usedDiffs))
     
 
 if __name__ == '__main__':
