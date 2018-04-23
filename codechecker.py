@@ -25,7 +25,10 @@ class CodeChecker():
     def diffResolved(self, baseRun, newRun):
         cmd = 'CodeChecker cmd diff -b ' + baseRun + ' -n ' + newRun + ' --resolved -o json'
         stdoutData = self.runCmd(cmd).decode(sys.stdout.encoding)
-        output = stdoutData.split('\n', 1)[1]
+        output = ''
+        stdoutDataLines = stdoutData.split('\n', 1)
+        if len(stdoutDataLines) > 1:
+            output = stdoutDataLines[1]
         out = []
         try:
             out = json.loads(output)

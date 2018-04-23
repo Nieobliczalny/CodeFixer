@@ -7,11 +7,12 @@ from gitprovider import GitProvider
 import entities
 import posixdiffer
 import os
+import shutil
 
 class TestDbBuilder():
     def __init__(self):
         self.vcs = GitProvider(config.train_repo)
-        self.ccdb = CCDatabase(config.ccDbFile)
+        self.ccdb = CCDatabase(config.train_ccDbFile)
         self.codeChecker = CodeChecker(config.train_repo)
     
     def loadCommitList(self):
@@ -41,7 +42,11 @@ class TestDbBuilder():
         return os.path.relpath(path, config.train_repo)
     
     def extractCode(self, id):
-        bugData = self.ccdb.getBugData(id)
+        bugData = self.ccdb.getNotResolvedBugData(id)
+        #TODO: Possible improvement for bugData
+        if bugData is None:
+            #TODO: Implement custom errors
+            return None
         fileRelativePath = self.convertFilePathToRepoRelativePath(bugData.getFile())
         fullCodeWithBug = self.vcs.getFileContents(fileRelativePath, self.commits[self.currentCommitIndex + 1])
         fullCodeWithoutBug = self.vcs.getFileContents(fileRelativePath, self.commits[self.currentCommitIndex])
@@ -78,8 +83,14 @@ class TestDbBuilder():
         print('Storing initial results... ', end = '')
         self.codeChecker.store(self.commits[self.currentCommitIndex])
         print('done')
+        print('Cleaning up tmp directory... ', end = '')
+        shutil.rmtree(config.tmpDir)
+        print('done')
     
     def findAndStoreFixDataForVersion(self):
+        print('Analyzing version', self.commits[self.currentCommitIndex], '... ', end = '')
+        self.codeChecker.check(True)
+        print('done')
         print('Getting list of resolved bugs for version', self.commits[self.currentCommitIndex],'... ', end = '')
         ids = self.getDiffResolvedIds()
         print('done')
@@ -93,6 +104,9 @@ class TestDbBuilder():
                 print('done')
         print('Storing CodeChecker results for this version... ', end = '')
         self.codeChecker.store(self.commits[self.currentCommitIndex])
+        print('done')
+        print('Cleaning up tmp directory... ', end = '')
+        shutil.rmtree(config.tmpDir)
         print('done')
     
     def iterateThroughVcsHistory(self):

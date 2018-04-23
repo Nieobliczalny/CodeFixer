@@ -35,11 +35,17 @@ class CCDatabase():
     
     def getAllReports(self):
         return self.executeAndFetchAll("SELECT id FROM reports")
-
+    
     def getBugData(self, bugId):
         #TODO: Ignore bugs marked as false-positive or intentional
         params = (bugId,)
         bugData = self.executeAndFetchOne("SELECT bpe.line_begin, bpe.col_begin, bpe.line_end, bpe.col_end, f.filepath FROM bug_path_events bpe JOIN files f ON bpe.file_id=f.id WHERE bpe.report_id=? ORDER BY bpe.`order` DESC LIMIT 1", params)
-        checkerData = self.executeAndFetchOne("SELECT checker_id FROM reports WHERE id=? LIMIT 1", params)
-        allBugData = BugData(bugData[0], bugData[2], bugData[4], checkerData[0])
+        checkerData = self.executeAndFetchOne("SELECT checker_id, detection_status FROM reports WHERE id=? LIMIT 1", params)
+        allBugData = BugData(bugData[0], bugData[2], bugData[4], checkerData[0], checkerData[1])
         return allBugData
+    
+    def getNotResolvedBugData(self, bugId):
+        bugData = self.getBugData(bugId)
+        if bugData is not None and bugData.getStatus() not in ['new', 'unresolved', 'reopened']:
+            return None
+        return bugData

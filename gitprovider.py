@@ -13,6 +13,7 @@ class GitProvider(vcsprovider.VCSProvider):
     
     def checkout(self, version):
         self.repo.head.reference = self.repo.commit(version)
+        self.repo.head.reset(index=True, working_tree=True)
     
     def getTree(self):
         return self.repo.head.commit.tree
