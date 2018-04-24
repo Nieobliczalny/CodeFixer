@@ -11,6 +11,9 @@ class Diff():
     
     def parseDiffHeader(self, header):
         regexMatch = re.search('^([0-9]+)(,[0-9]+)?([acd])([0-9]+)(,[0-9]+)?$', header)
+        if regexMatch is None:
+            #TODO: Implement custom errors
+            raise ValueError
         return (int(regexMatch.group(1)), regexMatch.group(3))
 
     def addAppend(self, line):
