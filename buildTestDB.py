@@ -51,7 +51,7 @@ class TestDbBuilder():
         fullCodeWithBug = self.vcs.getFileContents(fileRelativePath, self.commits[self.currentCommitIndex + 1])
         fullCodeWithoutBug = self.vcs.getFileContents(fileRelativePath, self.commits[self.currentCommitIndex])
         diff = posixdiffer.diff(fullCodeWithBug, fullCodeWithoutBug)
-        
+
         extractor = CodeExtractor(bugData)
         extractor.loadCodeFromText(fullCodeWithBug)
         extractor.extractBugCode()
@@ -64,7 +64,7 @@ class TestDbBuilder():
         #TODO: Possible improvement here
         if len(usedDiffs) != 1:
             return None
-        return entities.FixData(bugCodeFragment, fixCodeFragment, bugData[4])
+        return entities.FixData(bugCodeFragment, fixCodeFragment, bugData.getChecker())
 
     def prepareEnv(self, clean = False):
         print('Loading commit list... ', end = '')

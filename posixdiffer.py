@@ -55,10 +55,18 @@ class POSIXDiffer(Differ):
                 yield line
 
 
+def splitLinesWithRetainingLineFeed(text):
+    lines = text.split('\n')
+    for i in range(len(lines)):
+        lines[i] = lines[i] + '\n'
+    return lines
+
 def diff(a, b):
     """
     Compare `a` and `b` (lists of strings); return a POSIX/Gnu "normal format" diff.
     """
+    a = splitLinesWithRetainingLineFeed(a)
+    b = splitLinesWithRetainingLineFeed(b)
     generator = POSIXDiffer().compare(a, b)
     diff = []
     for line in generator:

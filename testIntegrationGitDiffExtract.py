@@ -1,6 +1,6 @@
 import unittest
 
-import posixdiffer
+import linuxdiffer
 import gitprovider
 from extractCode import CodeExtractor
 import config
@@ -19,7 +19,7 @@ class TestIntegrationGitDiffExtract(unittest.TestCase):
         bugStartLine = 8
         bugEndLine = 8
         filepath = 'bugcode2.cpp'
-        return BugData(bugStartLine, bugEndLine, filepath, '')
+        return BugData(bugStartLine, bugEndLine, filepath, '', '')
     
     def getRandomName(self):
         return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8))
@@ -31,9 +31,9 @@ class TestIntegrationGitDiffExtract(unittest.TestCase):
         commit2 = commits[-3]
         file1 = gp.getFileContents('bugcode2.cpp', commit1)
         file2 = gp.getFileContents('bugcode2.cpp', commit2)
-        diff = posixdiffer.diff(self.splitLinesWithRetainingLineFeed(file1), self.splitLinesWithRetainingLineFeed(file2))
+        diff = linuxdiffer.diff(file1, file2)
         expectedOutput = """8d7
-<     a = 3;\r"""
+<     a = 3;"""
         self.assertEqual(expectedOutput, diff)
     
     def testExtractCodeWithDiffBetweenTwoCommits(self):
@@ -43,7 +43,7 @@ class TestIntegrationGitDiffExtract(unittest.TestCase):
         commit2 = commits[-3]
         file1 = gp.getFileContents('bugcode2.cpp', commit1)
         file2 = gp.getFileContents('bugcode2.cpp', commit2)
-        diff = posixdiffer.diff(self.splitLinesWithRetainingLineFeed(file1), self.splitLinesWithRetainingLineFeed(file2))
+        diff = linuxdiffer.diff(file1, file2)
         usedDiffs = []
         bugData = self.getBugData()
         extractor = CodeExtractor(bugData)

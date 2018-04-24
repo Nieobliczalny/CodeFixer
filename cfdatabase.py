@@ -54,3 +54,5 @@ class CFDatabase():
     def store(self, bugCode, fixCode, checker):
         cursor = self.connection.cursor()
         cursor.execute("INSERT INTO fix_data (bugged_code, fixed_code, checker) VALUES (?, ?, ?)",(bugCode, fixCode, checker,))
+        self.connection.commit()
+        cursor.close()

@@ -20,43 +20,43 @@ class TestCodeExtract(unittest.TestCase):
         bugStartLine = 8
         bugEndLine = 8
         filepath = './testdata/bugcode.cpp'
-        return BugData(bugStartLine, bugEndLine, filepath, '')
+        return BugData(bugStartLine, bugEndLine, filepath, '', '')
     
     def getCorrectBugDataFileBegin(self):
         bugStartLine = 1
         bugEndLine = 1
         filepath = './testdata/bugcode.cpp'
-        return BugData(bugStartLine, bugEndLine, filepath, '')
+        return BugData(bugStartLine, bugEndLine, filepath, '', '')
     
     def getCorrectBugDataFileEnd(self):
         bugStartLine = 16
         bugEndLine = 16
         filepath = './testdata/bugcode.cpp'
-        return BugData(bugStartLine, bugEndLine, filepath, '')
+        return BugData(bugStartLine, bugEndLine, filepath, '', '')
     
     def getCorrectBugDataFileMultiLine(self):
         bugStartLine = 7
         bugEndLine = 9
         filepath = './testdata/bugcode.cpp'
-        return BugData(bugStartLine, bugEndLine, filepath, '')
+        return BugData(bugStartLine, bugEndLine, filepath, '', '')
 
     def getIncorrectBugDataFileNotExist(self):
         bugStartLine = 8
         bugEndLine = 8
         filepath = './testdata/bugcode_notexists.cpp'
-        return BugData(bugStartLine, bugEndLine, filepath, '')
+        return BugData(bugStartLine, bugEndLine, filepath, '', '')
     
     def getIncorrectBugDataLineOutOfRange(self):
         bugStartLine = 20
         bugEndLine = 21
         filepath = './testdata/bugcode.cpp'
-        return BugData(bugStartLine, bugEndLine, filepath, '')
+        return BugData(bugStartLine, bugEndLine, filepath, '', '')
     
     def getIncorrectBugDataLineBoundariesSwap(self):
         bugStartLine = 9
         bugEndLine = 7
         filepath = './testdata/bugcode.cpp'
-        return BugData(bugStartLine, bugEndLine, filepath, '')
+        return BugData(bugStartLine, bugEndLine, filepath, '', '')
     
     def getFileDiff(self, lineNo, toAdd, toRemove):
         noToAdd = len(toAdd)
