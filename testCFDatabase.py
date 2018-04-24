@@ -26,5 +26,17 @@ class TestCFDatabase(unittest.TestCase):
         self.assertGreater(len(db.getAllFixData()), 0)
         del db
 
+    def testDatabaseStoreAndClean(self):
+        dbPath = "./testdata/testtmp.sqlite"
+        dbFile = Path(dbPath)
+        db = CFDatabase(dbPath)
+        self.assertEqual(len(db.getAllFixData()), 0)
+        db.store('', '', '')
+        self.assertEqual(len(db.getAllFixData()), 1)
+        db.clean()
+        self.assertEqual(len(db.getAllFixData()), 0)
+        del db
+        dbFile.unlink()
+
 if __name__ == '__main__':
     unittest.main()
