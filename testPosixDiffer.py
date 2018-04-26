@@ -1,6 +1,6 @@
 import unittest
 
-import posixdiffer
+from posixdiffer import POSIXDiffer
 import config
 
 class TestPosixDiffer(unittest.TestCase):
@@ -51,28 +51,28 @@ int main(void)
 <     if (a == 0)
 ---
 >     if (a != 0)"""
-        diff = posixdiffer.diff(file1, file2)
+        diff = POSIXDiffer().diff(file1, file2)
         self.assertEqual(expectedOutput, diff)
         file1 = 'abc'
         file2 = """abc
 cdef"""
         expectedOutput = """1a2
 > cdef"""
-        diff = posixdiffer.diff(file1, file2)
+        diff = POSIXDiffer().diff(file1, file2)
         self.assertEqual(expectedOutput, diff)
     
     def testDiffBetweenSameFiles(self):
         file1 = self.getFile1()
         file2 = self.getFile1()
         expectedOutput = ''
-        diff = posixdiffer.diff(file1, file2)
+        diff = POSIXDiffer().diff(file1, file2)
         self.assertEqual(expectedOutput, diff)
     
     def testDiffBetweenEmptyFiles(self):
         file1 = ''
         file2 = ''
         expectedOutput = ''
-        diff = posixdiffer.diff(file1, file2)
+        diff = POSIXDiffer().diff(file1, file2)
         self.assertEqual(expectedOutput, diff)
     
     def testDiffBetweenEmptyAndRegularFile(self):
@@ -82,7 +82,7 @@ cdef"""
 < 
 ---
 > abc"""
-        diff = posixdiffer.diff(file1, file2)
+        diff = POSIXDiffer().diff(file1, file2)
         self.assertEqual(expectedOutput, diff)
     
 

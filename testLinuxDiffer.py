@@ -1,6 +1,6 @@
 import unittest
 
-import linuxdiffer
+from linuxdiffer import LinuxDiffer
 import config
 
 class TestLinuxDiffer(unittest.TestCase):
@@ -51,7 +51,7 @@ int main(void)
 <     if (a == 0)
 ---
 >     if (a != 0)"""
-        diff = linuxdiffer.diff(file1, file2)
+        diff = LinuxDiffer().diff(file1, file2)
         self.assertEqual(expectedOutput, diff)
         file1 = """abc
 """
@@ -60,21 +60,21 @@ cdef
 """
         expectedOutput = """1a2
 > cdef"""
-        diff = linuxdiffer.diff(file1, file2)
+        diff = LinuxDiffer().diff(file1, file2)
         self.assertEqual(expectedOutput, diff)
     
     def testDiffBetweenSameFiles(self):
         file1 = self.getFile1()
         file2 = self.getFile1()
         expectedOutput = ''
-        diff = linuxdiffer.diff(file1, file2)
+        diff = LinuxDiffer().diff(file1, file2)
         self.assertEqual(expectedOutput, diff)
     
     def testDiffBetweenEmptyFiles(self):
         file1 = ''
         file2 = ''
         expectedOutput = ''
-        diff = linuxdiffer.diff(file1, file2)
+        diff = LinuxDiffer().diff(file1, file2)
         self.assertEqual(expectedOutput, diff)
     
     def testDiffBetweenEmptyAndRegularFile(self):
@@ -83,7 +83,7 @@ cdef
 """
         expectedOutput = """0a1
 > abc"""
-        diff = linuxdiffer.diff(file1, file2)
+        diff = LinuxDiffer().diff(file1, file2)
         self.assertEqual(expectedOutput, diff)
     
 

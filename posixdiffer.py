@@ -4,7 +4,8 @@
 import sys, optparse
 import itertools
 
-from difflib import Differ, SequenceMatcher
+from difflib import SequenceMatcher
+from differ import Differ
 
 class POSIXDiffer(Differ):
     """
@@ -53,25 +54,24 @@ class POSIXDiffer(Differ):
         for g in first, '---\n', second:
             for line in g:
                 yield line
+    
+    def splitLinesWithRetainingLineFeed(self, text):
+        lines = text.split('\n')
+        for i in range(len(lines)):
+            lines[i] = lines[i] + '\n'
+        return lines
 
-
-def splitLinesWithRetainingLineFeed(text):
-    lines = text.split('\n')
-    for i in range(len(lines)):
-        lines[i] = lines[i] + '\n'
-    return lines
-
-def diff(a, b):
-    """
-    Compare `a` and `b` (lists of strings); return a POSIX/Gnu "normal format" diff.
-    """
-    a = splitLinesWithRetainingLineFeed(a)
-    b = splitLinesWithRetainingLineFeed(b)
-    generator = POSIXDiffer().compare(a, b)
-    diff = []
-    for line in generator:
-        diff.append(line)
-    diffText = ''.join(diff)
-    if len(diffText) > 0 and diffText[-1] == '\n':
-        diffText = diffText[:-1]
-    return diffText
+    def diff(self, a, b):
+        """
+        Compare `a` and `b` (lists of strings); return a POSIX/Gnu "normal format" diff.
+        """
+        a = self.splitLinesWithRetainingLineFeed(a)
+        b = self.splitLinesWithRetainingLineFeed(b)
+        generator = self.compare(a, b)
+        diff = []
+        for line in generator:
+            diff.append(line)
+        diffText = ''.join(diff)
+        if len(diffText) > 0 and diffText[-1] == '\n':
+            diffText = diffText[:-1]
+        return diffText

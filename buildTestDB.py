@@ -5,7 +5,7 @@ import config
 from extractCode import CodeExtractor
 from gitprovider import GitProvider
 import entities
-import posixdiffer
+from posixdiffer import POSIXDiffer
 import os
 import shutil
 
@@ -50,7 +50,7 @@ class TestDbBuilder():
         fileRelativePath = self.convertFilePathToRepoRelativePath(bugData.getFile())
         fullCodeWithBug = self.vcs.getFileContents(fileRelativePath, self.commits[self.currentCommitIndex + 1])
         fullCodeWithoutBug = self.vcs.getFileContents(fileRelativePath, self.commits[self.currentCommitIndex])
-        diff = posixdiffer.diff(fullCodeWithBug, fullCodeWithoutBug)
+        diff = POSIXDiffer().diff(fullCodeWithBug, fullCodeWithoutBug)
 
         extractor = CodeExtractor(bugData)
         extractor.loadCodeFromText(fullCodeWithBug)

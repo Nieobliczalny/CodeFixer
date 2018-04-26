@@ -1,6 +1,6 @@
 import unittest
 
-import linuxdiffer
+from linuxdiffer import LinuxDiffer
 import gitprovider
 from extractCode import CodeExtractor
 import config
@@ -31,7 +31,7 @@ class TestIntegrationGitDiffExtract(unittest.TestCase):
         commit2 = commits[-3]
         file1 = gp.getFileContents('bugcode2.cpp', commit1)
         file2 = gp.getFileContents('bugcode2.cpp', commit2)
-        diff = linuxdiffer.diff(file1, file2)
+        diff = LinuxDiffer().diff(file1, file2)
         expectedOutput = """8d7
 <     a = 3;"""
         self.assertEqual(expectedOutput, diff)
@@ -43,7 +43,7 @@ class TestIntegrationGitDiffExtract(unittest.TestCase):
         commit2 = commits[-3]
         file1 = gp.getFileContents('bugcode2.cpp', commit1)
         file2 = gp.getFileContents('bugcode2.cpp', commit2)
-        diff = linuxdiffer.diff(file1, file2)
+        diff = LinuxDiffer().diff(file1, file2)
         usedDiffs = []
         bugData = self.getBugData()
         extractor = CodeExtractor(bugData)
