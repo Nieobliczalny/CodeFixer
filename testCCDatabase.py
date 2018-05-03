@@ -3,15 +3,16 @@ import sqlite3
 from pathlib import Path
 
 from ccdatabase import CCDatabase
+from config import config
 
 class TestCCDatabase(unittest.TestCase):
     def testDatabaseOpenNonExistingFailure(self):
-        dbPath = "./testdata/testtmp.sqlite"
+        dbPath = config.getRepoDir() + "/testtmp.sqlite"
         with self.assertRaises(FileNotFoundError):
             db = CCDatabase(dbPath)
 
     def testDatabaseOpenExistingSuccess(self):
-        dbPath = "/home/Krystian/.codechecker/Default.sqlite"
+        dbPath = config.getCcDbFile()
         db = CCDatabase(dbPath)
         self.assertGreater(len(db.getAllReports()), 0)
 

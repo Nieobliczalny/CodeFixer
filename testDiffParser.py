@@ -2,7 +2,6 @@ import unittest
 
 from diff import Diff
 from diffparser import DiffParser
-import config
 
 class TestDiffParser(unittest.TestCase):
     def testDiffAdd(self):

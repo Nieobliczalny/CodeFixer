@@ -4,7 +4,7 @@ import re
 #Local modules
 import ccdatabase
 import cfdatabase
-import config
+from config import config
 from diff import Diff
 from diffparser import DiffParser
 
@@ -35,7 +35,7 @@ class CodeExtractor():
     
     def getStartLine(self):
         #Since indexing starts from 0 (line 1 is at index 0), we subtract 1
-        startLine = self.bugData.getStartLine() - config.noOfLinesBefore - 1
+        startLine = self.bugData.getStartLine() - config.getNoOfLinesBefore() - 1
         if startLine < 0:
             startLine = 0
         return startLine
@@ -44,7 +44,7 @@ class CodeExtractor():
         linesCount = len(self.code)
         #Since range end element is excluded when we use [start:end] on array
         #we do not subtract 1 so we include end line also
-        endLine = self.bugData.getEndLine() + config.noOfLinesAfter
+        endLine = self.bugData.getEndLine() + config.getNoOfLinesAfter()
         if endLine > linesCount:
             endLine = linesCount
         return endLine

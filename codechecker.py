@@ -1,4 +1,4 @@
-import config
+from config import config
 
 import subprocess
 import sys
@@ -7,7 +7,7 @@ import json
 class CodeChecker():
     def __init__(self, repo = None):
         if repo is None:
-            self.repo = config.repo
+            self.repo = config.getRepoDir()
         else:
             self.repo = repo
     
@@ -15,11 +15,11 @@ class CodeChecker():
         makeClean = ''
         if clean:
             makeClean = ' && make clean'
-        cmd = 'CodeChecker check -b "cd ' + self.repo + makeClean + ' && make" -o ' + config.tmpDir
+        cmd = 'CodeChecker check -b "cd ' + self.repo + makeClean + ' && make" -o ' + config.getTmpDir()
         self.runCmd(cmd)
     
     def store(self, tag):
-        cmd = 'CodeChecker store ' + config.tmpDir + ' -n ' + config.ccRunName + ' --tag ' + tag
+        cmd = 'CodeChecker store ' + config.getTmpDir() + ' -n ' + config.getCcRunName() + ' --tag ' + tag
         self.runCmd(cmd)
     
     def diffResolved(self, baseRun, newRun):
@@ -37,12 +37,7 @@ class CodeChecker():
         return out
     
     def runCmd(self, cmd):
-        command = '. ' + config.codeCheckerPath + config.codeCheckerRelativeVenv + ' && cd ' + config.codeCheckerPath + config.codeCheckerRelativeBinPath + ' && ./' + cmd
+        command = '. ' + config.getCcPath() + config.getCcRelativeVenv() + ' && cd ' + config.getCcPath() + config.getCcRelativeBinPath() + ' && ./' + cmd
         process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         proc_stdout = process.communicate()[0].strip()
         return proc_stdout
-
-#cc = CodeChecker()
-#cc.check(True)
-#cc.store("0000000")
-#print(cc.diffResolved('example', '/tmp/cctmp'))

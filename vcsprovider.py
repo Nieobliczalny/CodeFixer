@@ -1,5 +1,3 @@
-import config
-
 class VCSProvider():
     def __init__(self, repoDir):
         raise NotImplementedError

@@ -1,7 +1,6 @@
 import unittest
 
 from posixdiffer import POSIXDiffer
-import config
 
 class TestPosixDiffer(unittest.TestCase):
     def splitLinesWithRetainingLineFeed(self, text):

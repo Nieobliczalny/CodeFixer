@@ -3,7 +3,7 @@ import unittest
 from linuxdiffer import LinuxDiffer
 import gitprovider
 from extractCode import CodeExtractor
-import config
+from config import config
 import random
 import string
 from entities import BugData
@@ -25,7 +25,7 @@ class TestIntegrationGitDiffExtract(unittest.TestCase):
         return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8))
     
     def testDiffBetweenTwoCommits(self):
-        gp = gitprovider.GitProvider(config.test_repo)
+        gp = gitprovider.GitProvider(config.getRepoDir())
         commits = gp.getAllVersions('master')
         commit1 = commits[-2]
         commit2 = commits[-3]
@@ -37,7 +37,7 @@ class TestIntegrationGitDiffExtract(unittest.TestCase):
         self.assertEqual(expectedOutput, diff)
     
     def testExtractCodeWithDiffBetweenTwoCommits(self):
-        gp = gitprovider.GitProvider(config.test_repo)
+        gp = gitprovider.GitProvider(config.getRepoDir())
         commits = gp.getAllVersions('master')
         commit1 = commits[-2]
         commit2 = commits[-3]

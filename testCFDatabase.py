@@ -3,11 +3,11 @@ import sqlite3
 from pathlib import Path
 
 from cfdatabase import CFDatabase
+from config import config
 
-#TODO: Add test for clean and store
 class TestCFDatabase(unittest.TestCase):
     def testDatabaseOpenCreateSuccess(self):
-        dbPath = "./testdata/testtmp.sqlite"
+        dbPath = config.getRepoDir() + "/testtmp.sqlite"
         dbFile = Path(dbPath)
         if dbFile.is_file():
             dbFile.unlink()
@@ -21,13 +21,13 @@ class TestCFDatabase(unittest.TestCase):
         dbFile.unlink()
 
     def testDatabaseOpenExistingSuccess(self):
-        dbPath = "./testdata/test.sqlite"
+        dbPath = config.getRepoDir() + "/test.sqlite"
         db = CFDatabase(dbPath)
         self.assertGreater(len(db.getAllFixData()), 0)
         del db
 
     def testDatabaseStoreAndClean(self):
-        dbPath = "./testdata/testtmp.sqlite"
+        dbPath = config.getRepoDir() + "/testtmp.sqlite"
         dbFile = Path(dbPath)
         db = CFDatabase(dbPath)
         self.assertEqual(len(db.getAllFixData()), 0)

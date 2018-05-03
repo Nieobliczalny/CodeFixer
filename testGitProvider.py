@@ -1,23 +1,23 @@
 import unittest
 
 import gitprovider
-import config
+from config import config
 
 class TestGitProvider(unittest.TestCase):
     def testLoadRootCommit(self):
-        gp = gitprovider.GitProvider(config.test_repo)
-        commits = gp.getAllVersions('master')
+        gp = gitprovider.GitProvider(config.getRepoDir())
+        commits = gp.getAllVersions(config.getBranch())
         self.assertEqual('bde8d75eb1133703b93a5110ed01c635d6d886ac', commits[-1])
     
     def testCheckout(self):
-        gp = gitprovider.GitProvider(config.test_repo)
+        gp = gitprovider.GitProvider(config.getRepoDir())
         gp.checkout('bde8d75eb1133703b93a5110ed01c635d6d886ac')
         self.assertEqual(3, len(gp.getTree().blobs))
         gp.checkout('52a7d8e413686e54d23dbf002f68f6c9baeaa313')
         self.assertEqual(4, len(gp.getTree().blobs))
     
     def testFileContents(self):
-        gp = gitprovider.GitProvider(config.test_repo)
+        gp = gitprovider.GitProvider(config.getRepoDir())
         contents = gp.getFileContents('bugcode2.cpp', '3242a5e8d56da17553feee2b61fa424963148c82')
         expectedContent = """#include <iostream>
 
@@ -55,17 +55,17 @@ int main(void)
         self.assertEqual(expectedContent.split('\n'), contents.split('\r\n'))
     
     def testCheckoutNonExistingCommitFailure(self):
-        gp = gitprovider.GitProvider(config.test_repo)
+        gp = gitprovider.GitProvider(config.getRepoDir())
         with self.assertRaises(ValueError):
             gp.checkout('0000000000000000000000000000000000000002')
     
     def testGetFileContentsNotExistingFileFailure(self):
-        gp = gitprovider.GitProvider(config.test_repo)
+        gp = gitprovider.GitProvider(config.getRepoDir())
         with self.assertRaises(KeyError):
             gp.getFileContents('bugcode2.cpp', 'bde8d75eb1133703b93a5110ed01c635d6d886ac')
     
     def testGetFileContentsNotExistingCommitFailure(self):
-        gp = gitprovider.GitProvider(config.test_repo)
+        gp = gitprovider.GitProvider(config.getRepoDir())
         with self.assertRaises(ValueError):
             gp.getFileContents('bugcode.cpp', '0000000000000000000000000000000000000002')
 

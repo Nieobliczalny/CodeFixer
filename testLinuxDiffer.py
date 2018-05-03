@@ -1,7 +1,6 @@
 import unittest
 
 from linuxdiffer import LinuxDiffer
-import config
 
 class TestLinuxDiffer(unittest.TestCase):
     def splitLinesWithRetainingLineFeed(self, text):

@@ -1,7 +1,7 @@
 from ccdatabase import CCDatabase
 from cfdatabase import CFDatabase
 from codechecker import CodeChecker
-import config
+from config import config
 from extractCode import CodeExtractor
 from gitprovider import GitProvider
 import entities
@@ -11,15 +11,15 @@ import shutil
 
 class TestDbBuilder():
     def __init__(self):
-        self.vcs = GitProvider(config.train_repo)
-        self.ccdb = CCDatabase(config.train_ccDbFile)
-        self.codeChecker = CodeChecker(config.train_repo)
+        self.vcs = GitProvider(config.getRepoDir())
+        self.ccdb = CCDatabase(config.getCcDbFile())
+        self.codeChecker = CodeChecker(config.getRepoDir())
     
     def loadCommitList(self):
-        self.commits = self.vcs.getAllVersions(config.train_branch)
+        self.commits = self.vcs.getAllVersions(config.getBranch())
     
     def prepareDb(self, clean = False):
-        self.db = CFDatabase(config.train_db)
+        self.db = CFDatabase(config.getCfDbFile())
         if clean:
             self.db.clean()
     
@@ -32,14 +32,14 @@ class TestDbBuilder():
     
     def getDiffResolvedIds(self):
         self.codeChecker.check(True)
-        resolved = self.codeChecker.diffResolved(config.ccRunName, config.tmpDir)
+        resolved = self.codeChecker.diffResolved(config.getCcRunName(), config.getTmpDir())
         ids = []
         for bug in resolved:
             ids.append(bug['reportId'])
         return ids
     
     def convertFilePathToRepoRelativePath(self, path):
-        return os.path.relpath(path, config.train_repo)
+        return os.path.relpath(path, config.getRepoDir())
     
     def extractCode(self, id):
         bugData = self.ccdb.getNotResolvedBugData(id)
@@ -59,6 +59,7 @@ class TestDbBuilder():
         extractor.extractFixCode()
         bugCodeFragment = extractor.getBugCodeFragment()
         fixCodeFragment = extractor.getFixCodeFragment()
+        
         usedDiffs = extractor.getUsedDiffs()
         #Easy version - ignore bug if none or more than one diff used to fix
         #TODO: Possible improvement here
@@ -84,7 +85,7 @@ class TestDbBuilder():
         self.codeChecker.store(self.commits[self.currentCommitIndex])
         print('done')
         print('Cleaning up tmp directory... ', end = '')
-        shutil.rmtree(config.tmpDir)
+        shutil.rmtree(config.getTmpDir())
         print('done')
     
     def findAndStoreFixDataForVersion(self):
@@ -106,7 +107,7 @@ class TestDbBuilder():
         self.codeChecker.store(self.commits[self.currentCommitIndex])
         print('done')
         print('Cleaning up tmp directory... ', end = '')
-        shutil.rmtree(config.tmpDir)
+        shutil.rmtree(config.getTmpDir())
         print('done')
     
     def iterateThroughVcsHistory(self):
