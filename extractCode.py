@@ -105,3 +105,9 @@ class CodeExtractor():
     
     def getFixCodeFragment(self):
         return ''.join(self.fixCodeFragment)
+    
+    def extractAll(self, code, diff):
+        self.loadCodeFromText(code)
+        self.extractBugCode()
+        self.loadDiff(diff)
+        self.extractFixCode()

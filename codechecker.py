@@ -25,16 +25,19 @@ class CodeChecker():
     def diffResolved(self, baseRun, newRun):
         cmd = 'CodeChecker cmd diff -b ' + baseRun + ' -n ' + newRun + ' --resolved -o json'
         stdoutData = self.runCmd(cmd).decode(sys.stdout.encoding)
-        output = ''
-        stdoutDataLines = stdoutData.split('\n', 1)
-        if len(stdoutDataLines) > 1:
-            output = stdoutDataLines[1]
+        output = self.getDataAfterInfoLog(stdoutData)
         out = []
         try:
             out = json.loads(output)
         except json.decoder.JSONDecodeError:
             pass
         return out
+    
+    def getDataAfterInfoLog(self, text):
+        lines = text.split('\n', 1)
+        if len(lines) > 1:
+            return lines[1]
+        return ''
     
     def runCmd(self, cmd):
         command = '. ' + config.getCcPath() + config.getCcRelativeVenv() + ' && cd ' + config.getCcPath() + config.getCcRelativeBinPath() + ' && ./' + cmd
