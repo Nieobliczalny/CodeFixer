@@ -85,8 +85,7 @@ class CodeExtractor():
         startLine = self.getStartLine()
         endLine = self.getEndLine()
         for diff in self.diffs:
-            #TODO: Ignore diff if overflows available code fragment
-            if diff.getStartLineNo() >= startLine and diff.getStartLineNo() <= endLine:
+            if diff.getStartLineNo() >= startLine and diff.getStartLineNo() <= endLine and (diff.getStartLineNo() + len(diff.getDeletes())) <= endLine:
                 self.usedDiffs.append(diff.getHeader())
                 bugRelativeLineStart = self.convertCodeLineToBugRelativeLine(diff.getStartLineNo(), diff.getOpType())
                 while currentBugFragmentLine < bugRelativeLineStart:

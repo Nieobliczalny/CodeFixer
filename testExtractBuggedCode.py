@@ -270,6 +270,23 @@ int main(void)
 
         self.assertEqual(expectedFixedCode, fixedCode)
         self.assertEqual(0, len(usedDiffs))
+        
+    def testCodeFixExtractFailureTooBigDiff(self):
+        bugData = self.getCorrectBugDataFileMiddle()
+        bugCode = self.getBugCodeFileMiddle()
+        expectedFixedCode = bugCode
+        fileDiff = self.getFileDiff(bugData.getStartLine(), [], ['    a = 3;', '    a = 3;', '    a = 3;', '    a = 3;', '    a = 3;', '    a = 3;', '    a = 3;'])
+
+        extractor = CodeExtractor(bugData)
+        extractor.loadCodeFromFile()
+        extractor.extractBugCode()
+        extractor.loadDiff(fileDiff)
+        extractor.extractFixCode()
+        fixedCode = extractor.getFixCodeFragment()
+        usedDiffs = extractor.getUsedDiffs()
+
+        self.assertEqual(expectedFixedCode, fixedCode)
+        self.assertEqual(0, len(usedDiffs))
 
 if __name__ == '__main__':
     unittest.main()
