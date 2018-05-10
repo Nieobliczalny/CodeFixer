@@ -20,6 +20,12 @@ class TestIntegrationGitDiffExtract(unittest.TestCase):
         bugEndLine = 8
         filepath = 'bugcode2.cpp'
         return BugData(bugStartLine, bugEndLine, filepath, '', '')
+
+    def getBugData2(self):
+        bugStartLine = 12
+        bugEndLine = 12
+        filepath = 'bugcode2.cpp'
+        return BugData(bugStartLine, bugEndLine, filepath, '', '')
     
     def getRandomName(self):
         return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8))
@@ -100,6 +106,38 @@ class TestIntegrationGitDiffExtract(unittest.TestCase):
     a = 0;
     if (a == 0)
     {
+"""
+        self.assertEqual(expectedOutputBug, bugCode)
+        self.assertEqual(expectedOutputFix, fixCode)
+        self.assertEqual(0, len(usedDiffs))
+    
+    def testExtractCodeWithDiffBetweenTwoCommitsNotRelatedToBug(self):
+        gp = gitprovider.GitProvider(config.getRepoDir())
+        commits = gp.getAllVersions('master')
+        commit1 = commits[-2]
+        commit2 = commits[-3]
+        file1 = gp.getFileContents('bugcode2.cpp', commit1)
+        file2 = gp.getFileContents('bugcode2.cpp', commit2)
+        diff = LinuxDiffer().diff(file1, file2)
+        usedDiffs = []
+        bugData = self.getBugData2()
+        extractor = CodeExtractor(bugData)
+        extractor.loadCodeFromText(file1, '\r\n', '\n')
+        extractor.extractBugCode()
+        extractor.loadDiff(diff)
+        with self.assertRaises(ValueError):
+            extractor.extractFixCode()
+        bugCode = extractor.getBugCodeFragment()
+        fixCode = extractor.getFixCodeFragment()
+        usedDiffs = extractor.getUsedDiffs()
+        expectedOutputFix = ''
+        expectedOutputBug = """    a = 0;
+    if (a == 0)
+    {
+        int b = 1 / a;
+        cout << b << endl;
+    }
+    return 0;
 """
         self.assertEqual(expectedOutputBug, bugCode)
         self.assertEqual(expectedOutputFix, fixCode)

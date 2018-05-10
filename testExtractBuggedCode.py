@@ -257,14 +257,15 @@ int main(void)
     def testCodeFixExtractFailureNoDiff(self):
         bugData = self.getCorrectBugDataFileMiddle()
         bugCode = self.getBugCodeFileMiddle()
-        expectedFixedCode = bugCode
+        expectedFixedCode = ''
         fileDiff = self.getFileDiff(bugData.getEndLine() + 20, [], ['    a = 3;'])
 
         extractor = CodeExtractor(bugData)
         extractor.loadCodeFromFile()
         extractor.extractBugCode()
         extractor.loadDiff(fileDiff)
-        extractor.extractFixCode()
+        with self.assertRaises(ValueError):
+            extractor.extractFixCode()
         fixedCode = extractor.getFixCodeFragment()
         usedDiffs = extractor.getUsedDiffs()
 
@@ -274,14 +275,15 @@ int main(void)
     def testCodeFixExtractFailureTooBigDiff(self):
         bugData = self.getCorrectBugDataFileMiddle()
         bugCode = self.getBugCodeFileMiddle()
-        expectedFixedCode = bugCode
+        expectedFixedCode = ''
         fileDiff = self.getFileDiff(bugData.getStartLine(), [], ['    a = 3;', '    a = 3;', '    a = 3;', '    a = 3;', '    a = 3;', '    a = 3;', '    a = 3;'])
 
         extractor = CodeExtractor(bugData)
         extractor.loadCodeFromFile()
         extractor.extractBugCode()
         extractor.loadDiff(fileDiff)
-        extractor.extractFixCode()
+        with self.assertRaises(ValueError):
+            extractor.extractFixCode()
         fixedCode = extractor.getFixCodeFragment()
         usedDiffs = extractor.getUsedDiffs()
 

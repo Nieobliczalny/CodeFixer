@@ -86,7 +86,7 @@ class CodeExtractor():
         startLine = self.getStartLine()
         endLine = self.getEndLine()
         for diff in self.diffs:
-            if diff.getStartLineNo() >= startLine and diff.getStartLineNo() <= endLine and (diff.getStartLineNo() + len(diff.getDeletes())) <= endLine:
+            if diff.getStartLineNo() > startLine and diff.getStartLineNo() <= endLine and (diff.getStartLineNo() + len(diff.getDeletes())) <= endLine:
                 self.usedDiffs.append(diff.getHeader())
                 bugRelativeLineStart = self.convertCodeLineToBugRelativeLine(diff.getStartLineNo(), diff.getOpType())
                 while currentBugFragmentLine < bugRelativeLineStart:
@@ -97,7 +97,10 @@ class CodeExtractor():
 
                 for append in diff.getAppends():
                     fixCodeLines.append(append[2:] + '\n')
-        
+        if len(self.usedDiffs) < 1:
+            self.fixCodeFragment = []
+            raise ValueError
+
         while currentBugFragmentLine < len(self.bugCodeFragment):
             fixCodeLines.append(self.bugCodeFragment[currentBugFragmentLine])
             currentBugFragmentLine += 1
