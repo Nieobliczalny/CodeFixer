@@ -53,7 +53,10 @@ class TestDbBuilder():
         diff = POSIXDiffer().diff(fullCodeWithBug, fullCodeWithoutBug)
 
         extractor = CodeExtractor(bugData)
-        extractor.extractAll(fullCodeWithBug, diff)
+        try:
+            extractor.extractAll(fullCodeWithBug, diff)
+        except ValueError as extractError:
+            return None
         
         bugCodeFragment = extractor.getBugCodeFragment()
         fixCodeFragment = extractor.getFixCodeFragment()

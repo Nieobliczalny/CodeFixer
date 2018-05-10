@@ -34,6 +34,8 @@ class DiffParser():
     def splitDiff(self, diff):
         diffText = diff.split('\n')
         diffLineNo = len(diffText)
+        if diffLineNo < 2:
+            return
         currentLine = 0
         currentDiff = []
         while currentLine < diffLineNo:

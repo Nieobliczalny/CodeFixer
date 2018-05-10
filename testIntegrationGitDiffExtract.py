@@ -73,6 +73,38 @@ class TestIntegrationGitDiffExtract(unittest.TestCase):
         self.assertEqual(expectedOutputFix, fixCode)
         self.assertEqual(1, len(usedDiffs))
     
+    def testExtractCodeWithEmptyDiffBetweenTwoCommits(self):
+        gp = gitprovider.GitProvider(config.getRepoDir())
+        commits = gp.getAllVersions('master')
+        commit1 = commits[-2]
+        commit2 = commits[-2]
+        file1 = gp.getFileContents('bugcode2.cpp', commit1)
+        file2 = gp.getFileContents('bugcode2.cpp', commit2)
+        diff = LinuxDiffer().diff(file1, file2)
+        usedDiffs = []
+        bugData = self.getBugData()
+        extractor = CodeExtractor(bugData)
+        extractor.loadCodeFromText(file1, '\r\n', '\n')
+        extractor.extractBugCode()
+        extractor.loadDiff(diff)
+        with self.assertRaises(ValueError):
+            extractor.extractFixCode()
+        bugCode = extractor.getBugCodeFragment()
+        fixCode = extractor.getFixCodeFragment()
+        usedDiffs = extractor.getUsedDiffs()
+        expectedOutputFix = ''
+        expectedOutputBug = """int main(void)
+{
+    int a;
+    a = 3;
+    a = 0;
+    if (a == 0)
+    {
+"""
+        self.assertEqual(expectedOutputBug, bugCode)
+        self.assertEqual(expectedOutputFix, fixCode)
+        self.assertEqual(0, len(usedDiffs))
+    
 
 if __name__ == '__main__':
     unittest.main()

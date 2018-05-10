@@ -79,6 +79,7 @@ class CodeExtractor():
     def extractFixCode(self):
         if len(self.diffs) < 1:
             #TODO: Implement custom errors
+            self.fixCodeFragment = []
             raise ValueError
         currentBugFragmentLine = 0
         fixCodeLines = []
