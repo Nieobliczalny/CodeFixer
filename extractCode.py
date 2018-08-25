@@ -96,8 +96,12 @@ class CodeExtractor():
                 currentBugFragmentLine += len(diff.getDeletes())
 
                 for append in diff.getAppends():
+                    #TODO: Is there a better way?
+                    if append[-1] == '\r':
+                        append = append[:-1]
                     fixCodeLines.append(append[2:] + '\n')
         if len(self.usedDiffs) < 1:
+            #TODO: Implement custom errors
             self.fixCodeFragment = []
             raise ValueError
 

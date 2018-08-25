@@ -68,6 +68,11 @@ int main(void)
         gp = gitprovider.GitProvider(config.getRepoDir())
         with self.assertRaises(ValueError):
             gp.getFileContents('bugcode.cpp', '0000000000000000000000000000000000000002')
+    
+    @classmethod
+    def tearDownClass(self):
+        gp = gitprovider.GitProvider(config.getRepoDir())
+        gp.checkout('master')
 
 if __name__ == '__main__':
     unittest.main()

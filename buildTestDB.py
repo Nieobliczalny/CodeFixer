@@ -47,9 +47,14 @@ class TestDbBuilder():
         if bugData is None:
             #TODO: Implement custom errors
             return None
+            
         fileRelativePath = self.convertFilePathToRepoRelativePath(bugData.getFile())
-        fullCodeWithBug = self.vcs.getFileContents(fileRelativePath, self.commits[self.currentCommitIndex + 1])
-        fullCodeWithoutBug = self.vcs.getFileContents(fileRelativePath, self.commits[self.currentCommitIndex])
+        try:
+            fullCodeWithBug = self.vcs.getFileContents(fileRelativePath, self.commits[self.currentCommitIndex + 1])
+            fullCodeWithoutBug = self.vcs.getFileContents(fileRelativePath, self.commits[self.currentCommitIndex])
+        except KeyError as extractError:
+            return None
+
         diff = POSIXDiffer().diff(fullCodeWithBug, fullCodeWithoutBug)
 
         extractor = CodeExtractor(bugData)

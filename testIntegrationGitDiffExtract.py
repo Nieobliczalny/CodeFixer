@@ -26,6 +26,12 @@ class TestIntegrationGitDiffExtract(unittest.TestCase):
         bugEndLine = 12
         filepath = 'bugcode2.cpp'
         return BugData(bugStartLine, bugEndLine, filepath, '', '')
+
+    def getBugData3(self):
+        bugStartLine = 9
+        bugEndLine = 9
+        filepath = 'bugcode2.cpp'
+        return BugData(bugStartLine, bugEndLine, filepath, '', '')
     
     def getRandomName(self):
         return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8))
@@ -138,6 +144,112 @@ class TestIntegrationGitDiffExtract(unittest.TestCase):
         cout << b << endl;
     }
     return 0;
+"""
+        self.assertEqual(expectedOutputBug, bugCode)
+        self.assertEqual(expectedOutputFix, fixCode)
+        self.assertEqual(0, len(usedDiffs))
+    
+    def testExtractCodeWithDiffBetweenTwoCommitsFileRenamed(self):
+        gp = gitprovider.GitProvider(config.getRepoDir())
+        commits = gp.getAllVersions('master')
+        commit1 = commits[-5]
+        commit2 = commits[-6]
+        file1 = gp.getFileContents('bugcode2.cpp', commit1)
+        file2 = file1
+        with self.assertRaises(KeyError):
+            file2 = gp.getFileContents('bugcode2.cpp', commit2)
+        diff = LinuxDiffer().diff(file1, file2)
+        usedDiffs = []
+        bugData = self.getBugData3()
+        extractor = CodeExtractor(bugData)
+        extractor.loadCodeFromText(file1, '\r\n', '\n')
+        extractor.extractBugCode()
+        extractor.loadDiff(diff)
+        with self.assertRaises(ValueError):
+            extractor.extractFixCode()
+        bugCode = extractor.getBugCodeFragment()
+        fixCode = extractor.getFixCodeFragment()
+        usedDiffs = extractor.getUsedDiffs()
+        expectedOutputFix = ''
+        expectedOutputBug = """{
+    int a;
+    a = 0;
+    a = 2;
+    if (a != 0)
+    {
+        int b = 1 / a;
+"""
+        self.assertEqual(expectedOutputBug, bugCode)
+        self.assertEqual(expectedOutputFix, fixCode)
+        self.assertEqual(0, len(usedDiffs))
+    
+    def testExtractCodeWithDiffBetweenTwoCommitsMultiDiffInFragment(self):
+        gp = gitprovider.GitProvider(config.getRepoDir())
+        commits = gp.getAllVersions('master')
+        commit1 = commits[-6]
+        commit2 = commits[-7]
+        file1 = gp.getFileContents('bugcode3.cpp', commit1)
+        file2 = gp.getFileContents('bugcode3.cpp', commit2)
+        diff = LinuxDiffer().diff(file1, file2)
+        usedDiffs = []
+        bugData = self.getBugData3()
+        extractor = CodeExtractor(bugData)
+        extractor.loadCodeFromText(file1, '\r\n', '\n')
+        extractor.extractBugCode()
+        extractor.loadDiff(diff)
+        extractor.extractFixCode()
+        bugCode = extractor.getBugCodeFragment()
+        fixCode = extractor.getFixCodeFragment()
+        usedDiffs = extractor.getUsedDiffs()
+        expectedOutputFix = """{;
+    int a;
+    a = 0;
+    a = 2;
+    if (a != 0)
+    {;
+        int b = 1 / a;
+"""
+        expectedOutputBug = """{
+    int a;
+    a = 0;
+    a = 2;
+    if (a != 0)
+    {
+        int b = 1 / a;
+"""
+        self.assertEqual(expectedOutputBug, bugCode)
+        self.assertEqual(expectedOutputFix, fixCode)
+        self.assertEqual(2, len(usedDiffs))
+    
+    def testExtractCodeWithDiffBetweenTwoCommitsFileRemoved(self):
+        gp = gitprovider.GitProvider(config.getRepoDir())
+        commits = gp.getAllVersions('master')
+        commit1 = commits[-7]
+        commit2 = commits[-8]
+        file1 = gp.getFileContents('bugcode3.cpp', commit1)
+        file2 = file1
+        with self.assertRaises(KeyError):
+            file2 = gp.getFileContents('bugcode3.cpp', commit2)
+        diff = LinuxDiffer().diff(file1, file2)
+        usedDiffs = []
+        bugData = self.getBugData3()
+        extractor = CodeExtractor(bugData)
+        extractor.loadCodeFromText(file1, '\r\n', '\n')
+        extractor.extractBugCode()
+        extractor.loadDiff(diff)
+        with self.assertRaises(ValueError):
+            extractor.extractFixCode()
+        bugCode = extractor.getBugCodeFragment()
+        fixCode = extractor.getFixCodeFragment()
+        usedDiffs = extractor.getUsedDiffs()
+        expectedOutputFix = ''
+        expectedOutputBug = """{;
+    int a;
+    a = 0;
+    a = 2;
+    if (a != 0)
+    {;
+        int b = 1 / a;
 """
         self.assertEqual(expectedOutputBug, bugCode)
         self.assertEqual(expectedOutputFix, fixCode)
