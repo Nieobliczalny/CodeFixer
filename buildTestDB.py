@@ -124,5 +124,10 @@ class TestDbBuilder():
         self.prepareEnv(clean)
         self.iterateThroughVcsHistory()
 
-builder = TestDbBuilder()
-builder.build(True)
+def main(clean = False):
+    builder = TestDbBuilder()
+    builder.build(clean)
+
+if __name__ == "__main__":
+    #TODO: Parametrize it
+    main(True)

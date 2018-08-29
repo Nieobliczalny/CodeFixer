@@ -14,7 +14,7 @@ class TestCCDatabase(unittest.TestCase):
     def testDatabaseOpenExistingSuccess(self):
         dbPath = config.getCcDbFile()
         db = CCDatabase(dbPath)
-        self.assertGreater(len(db.getAllReports()), 0)
+        self.assertEqual(len(db.getAllReports()), 0)
 
 if __name__ == '__main__':
     unittest.main()
