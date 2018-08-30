@@ -15,8 +15,13 @@ class TestDbBuilder():
         self.ccdb = CCDatabase(config.getCcDbFile())
         self.codeChecker = CodeChecker(config.getRepoDir())
     
-    def loadCommitList(self):
+    def loadCommitList(self, clean = False):
         self.commits = self.vcs.getAllVersions(config.getBranch())
+        if not clean:
+            lastCommit = self.db.getLastCommit()
+            lastIndex = self.commits.index(lastCommit)
+            self.commits = self.commits[0:lastIndex]
+
     
     def prepareDb(self, clean = False):
         self.db = CFDatabase(config.getCfDbFile())
@@ -74,25 +79,26 @@ class TestDbBuilder():
         return entities.FixData(bugCodeFragment, fixCodeFragment, bugData.getChecker())
 
     def prepareEnv(self, clean = False):
-        print('Loading commit list... ', end = '')
-        self.loadCommitList()
-        print('done')
         print('Preparing train db... ', end = '')
         self.prepareDb(clean)
+        print('done')
+        print('Loading commit list... ', end = '')
+        self.loadCommitList(clean)
         print('done')
         print('Checking out to root... ', end = '')
         self.currentCommitIndex = len(self.commits)
         self.checkoutToNextVersion()
         print('done')
-        print('Initial analysis... ', end = '')
-        self.codeChecker.check(True)
-        print('done')
-        print('Storing initial results... ', end = '')
-        self.codeChecker.store(self.commits[self.currentCommitIndex])
-        print('done')
-        print('Cleaning up tmp directory... ', end = '')
-        shutil.rmtree(config.getTmpDir())
-        print('done')
+        if clean:
+            print('Initial analysis... ', end = '')
+            self.codeChecker.check(True)
+            print('done')
+            print('Storing initial results... ', end = '')
+            self.codeChecker.store(self.commits[self.currentCommitIndex])
+            print('done')
+            print('Cleaning up tmp directory... ', end = '')
+            shutil.rmtree(config.getTmpDir())
+            print('done')
     
     def findAndStoreFixDataForVersion(self):
         print('Analyzing version', self.commits[self.currentCommitIndex], '... ', end = '')
@@ -111,6 +117,9 @@ class TestDbBuilder():
                 print('done')
         print('Storing CodeChecker results for this version... ', end = '')
         self.codeChecker.store(self.commits[self.currentCommitIndex])
+        print('done')
+        print('Storing version information... ', end = '')
+        self.db.storeLastCommit(self.commits[self.currentCommitIndex])
         print('done')
         print('Cleaning up tmp directory... ', end = '')
         shutil.rmtree(config.getTmpDir())

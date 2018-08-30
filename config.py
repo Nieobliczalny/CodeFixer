@@ -49,4 +49,7 @@ class Config():
     def getTmpDir(self):
         return self.tmpDir
 
+    def setBranch(self, branchName):
+        self.repoBranch = branchName
+
 config = Config()
