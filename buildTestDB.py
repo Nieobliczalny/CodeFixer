@@ -8,6 +8,7 @@ import entities
 from posixdiffer import POSIXDiffer
 import os
 import shutil
+import sys
 
 class TestDbBuilder():
     def __init__(self):
@@ -138,5 +139,14 @@ def main(clean = False):
     builder.build(clean)
 
 if __name__ == "__main__":
-    #TODO: Parametrize it
-    main(True)
+    runClean = True
+    if len(sys.argv) > 1 and (sys.argv[1] == 'incremental' or sys.argv[1] == 'i'):
+        print("Running incremental analysis")
+        runClean = False
+    elif len(sys.argv) > 1 and (sys.argv[1] == 'clean' or sys.argv[1] == 'c'):
+        print("Running clean analysis")
+        runClean = True
+    else:
+        print("No argument given, assuming clean analysis")
+
+    main(runClean)
