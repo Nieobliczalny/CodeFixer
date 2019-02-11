@@ -38,7 +38,7 @@ class TestIntegrationGitDiffExtract(unittest.TestCase):
     
     def testDiffBetweenTwoCommits(self):
         gp = gitprovider.GitProvider(config.getRepoDir())
-        commits = gp.getAllVersions('master')
+        commits = gp.getAllVersions('trainDbScriptTest')
         commit1 = commits[-2]
         commit2 = commits[-3]
         file1 = gp.getFileContents('bugcode2.cpp', commit1)
@@ -50,7 +50,7 @@ class TestIntegrationGitDiffExtract(unittest.TestCase):
     
     def testExtractCodeWithDiffBetweenTwoCommits(self):
         gp = gitprovider.GitProvider(config.getRepoDir())
-        commits = gp.getAllVersions('master')
+        commits = gp.getAllVersions('trainDbScriptTest')
         commit1 = commits[-2]
         commit2 = commits[-3]
         file1 = gp.getFileContents('bugcode2.cpp', commit1)
@@ -87,7 +87,7 @@ class TestIntegrationGitDiffExtract(unittest.TestCase):
     
     def testExtractCodeWithEmptyDiffBetweenTwoCommits(self):
         gp = gitprovider.GitProvider(config.getRepoDir())
-        commits = gp.getAllVersions('master')
+        commits = gp.getAllVersions('trainDbScriptTest')
         commit1 = commits[-2]
         commit2 = commits[-2]
         file1 = gp.getFileContents('bugcode2.cpp', commit1)
@@ -119,7 +119,7 @@ class TestIntegrationGitDiffExtract(unittest.TestCase):
     
     def testExtractCodeWithDiffBetweenTwoCommitsNotRelatedToBug(self):
         gp = gitprovider.GitProvider(config.getRepoDir())
-        commits = gp.getAllVersions('master')
+        commits = gp.getAllVersions('trainDbScriptTest')
         commit1 = commits[-2]
         commit2 = commits[-3]
         file1 = gp.getFileContents('bugcode2.cpp', commit1)
@@ -151,7 +151,7 @@ class TestIntegrationGitDiffExtract(unittest.TestCase):
     
     def testExtractCodeWithDiffBetweenTwoCommitsFileRenamed(self):
         gp = gitprovider.GitProvider(config.getRepoDir())
-        commits = gp.getAllVersions('master')
+        commits = gp.getAllVersions('trainDbScriptTest')
         commit1 = commits[-5]
         commit2 = commits[-6]
         file1 = gp.getFileContents('bugcode2.cpp', commit1)
@@ -185,7 +185,7 @@ class TestIntegrationGitDiffExtract(unittest.TestCase):
     
     def testExtractCodeWithDiffBetweenTwoCommitsMultiDiffInFragment(self):
         gp = gitprovider.GitProvider(config.getRepoDir())
-        commits = gp.getAllVersions('master')
+        commits = gp.getAllVersions('trainDbScriptTest')
         commit1 = commits[-6]
         commit2 = commits[-7]
         file1 = gp.getFileContents('bugcode3.cpp', commit1)
@@ -223,7 +223,7 @@ class TestIntegrationGitDiffExtract(unittest.TestCase):
     
     def testExtractCodeWithDiffBetweenTwoCommitsFileRemoved(self):
         gp = gitprovider.GitProvider(config.getRepoDir())
-        commits = gp.getAllVersions('master')
+        commits = gp.getAllVersions('trainDbScriptTest')
         commit1 = commits[-7]
         commit2 = commits[-8]
         file1 = gp.getFileContents('bugcode3.cpp', commit1)
