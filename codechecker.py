@@ -15,7 +15,7 @@ class CodeChecker():
         makeClean = ''
         if clean:
             makeClean = ' && make clean'
-        cmd = 'CodeChecker check -b "cd ' + self.repo + makeClean + ' && make" -o ' + config.getTmpDir()
+        cmd = 'CodeChecker check -e all -b "cd ' + self.repo + makeClean + ' && make" -o ' + config.getTmpDir()
         self.runCmd(cmd)
     
     def store(self, tag):
@@ -34,8 +34,8 @@ class CodeChecker():
         return out
     
     def getDataAfterInfoLog(self, text):
-        lines = text.split('\n', 1)
-        if len(lines) > 1:
+        lines = text.split('\n')
+        if len(lines) > 2:
             return lines[1]
         return ''
     
