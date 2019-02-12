@@ -155,6 +155,7 @@ pp_number						(\.?{digit}({digit}|{non_digit}|[eE][-+]|\.)*)
 {universal_character_name}		{ yylval = addSymbol(yytext, yyleng); return T_ESCAPED; }
 
 \n								|
+\r                              |
 {ws}+							{ /* Throw away whitespace */ }
 .								{ return (yytext[0]); }
 
