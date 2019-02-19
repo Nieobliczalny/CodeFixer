@@ -62,9 +62,9 @@ class CFDatabase():
         cursor.execute(query, params)
         return cursor.fetchone()
 
-    def executeAndFetchAll(self, query):
+    def executeAndFetchAll(self, query, params = ()):
         cursor = self.connection.cursor()
-        cursor.execute(query)
+        cursor.execute(query, params)
         return cursor.fetchall()
 
     def getLastCommit(self):
@@ -81,6 +81,10 @@ class CFDatabase():
     
     def getAllFixData(self):
         return self.executeAndFetchAll("SELECT id, bugged_code, fixed_code, checker FROM fix_data")
+        
+    
+    def getFixDataForChecker(self, checker):
+        return self.executeAndFetchAll("SELECT id, bugged_code, fixed_code, checker FROM fix_data WHERE checker=?", (checker,))
     
     def clean(self):
         cursor = self.connection.cursor()

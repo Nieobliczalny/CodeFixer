@@ -4,7 +4,7 @@ from cxxlexer import CxxLexer
 
 class TestCxxLexer(unittest.TestCase):
     def getFile1(self):
-        return """#include <iostream>
+        return u"""#include <iostream>
 
 using namespace std;
 
@@ -21,7 +21,7 @@ int main(void)
 }"""
 
     def getFile2(self):
-        return """#include <iostream>
+        return u"""#include <iostream>
 
 using namespace std;
 
@@ -43,7 +43,7 @@ int main(void)
         return [{u"token": u"315", u"has_value": False}, {u"token": u"289", u"has_value": False}, {u"token": u"347", u"has_value": True, u"value": u"std"}, {u"token": u"59", u"has_value": False}, {u"token": u"286", u"has_value": False}, {u"token": u"347", u"has_value": True, u"value": u"main"}, {u"token": u"40", u"has_value": False}, {u"token": u"317", u"has_value": False}, {u"token": u"41", u"has_value": False}, {u"token": u"123", u"has_value": False}, {u"token": u"286", u"has_value": False}, {u"token": u"347", u"has_value": True, u"value": u"a"}, {u"token": u"59", u"has_value": False}, {u"token": u"347", u"has_value": True, u"value": u"a"}, {u"token": u"61", u"has_value": False}, {u"token": u"346", u"has_value": True, u"value": u"0"}, {u"token": u"59", u"has_value": False}, {u"token": u"284", u"has_value": False}, {u"token": u"40", u"has_value": False}, {u"token": u"347", u"has_value": True, u"value": u"a"}, {u"token": u"326", u"has_value": False}, {u"token": u"346", u"has_value": True, u"value": u"0"}, {u"token": u"41", u"has_value": False}, {u"token": u"123", u"has_value": False}, {u"token": u"286", u"has_value": False}, {u"token": u"347", u"has_value": True, u"value": u"b"}, {u"token": u"61", u"has_value": False}, {u"token": u"346", u"has_value": True, u"value": u"1"}, {u"token": u"47", u"has_value": False}, {u"token": u"347", u"has_value": True, u"value": u"a"}, {u"token": u"59", u"has_value": False}, {u"token": u"347", u"has_value": True, u"value": u"cout"}, {u"token": u"323", u"has_value": False}, {u"token": u"347", u"has_value": True, u"value": u"b"}, {u"token": u"323", u"has_value": False}, {u"token": u"347", u"has_value": True, u"value": u"endl"}, {u"token": u"59", u"has_value": False}, {u"token": u"125", u"has_value": False}, {u"token": u"297", u"has_value": False}, {u"token": u"346", u"has_value": True, u"value": u"0"}, {u"token": u"59", u"has_value": False}, {u"token": u"125", u"has_value": False}]
 
     def testEmpty(self):
-        data = CxxLexer().tokenize('')
+        data = CxxLexer().tokenize(u'')
         self.assertEqual(0, len(data))
     
     def testSampleCode1(self):

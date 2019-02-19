@@ -31,8 +31,10 @@ class TestCFDatabase(unittest.TestCase):
         dbFile = Path(dbPath)
         db = CFDatabase(dbPath)
         self.assertEqual(len(db.getAllFixData()), 0)
-        db.store('', '', '')
+        db.store('', '', 'a')
         self.assertEqual(len(db.getAllFixData()), 1)
+        self.assertEqual(len(db.getFixDataForChecker('a')), 1)
+        self.assertEqual(len(db.getFixDataForChecker('b')), 0)
         db.clean()
         self.assertEqual(len(db.getAllFixData()), 0)
         del db

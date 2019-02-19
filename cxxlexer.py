@@ -15,5 +15,5 @@ class CxxLexer():
     
     def runCmd(self, cmd, inputData):
         process = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-        proc_stdout = process.communicate(input=inputData)[0].strip()
+        proc_stdout = process.communicate(input=inputData.encode())[0].strip()
         return proc_stdout
