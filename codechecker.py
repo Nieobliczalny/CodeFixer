@@ -15,15 +15,18 @@ class CodeChecker():
         makeClean = ''
         if clean:
             makeClean = ' && make clean'
-        cmd = 'CodeChecker check -e all -b "cd ' + self.repo + makeClean + ' && make" -o ' + config.getTmpDir()
+        jobs = ''
+        if config.ccNoOfJobs > 1:
+            jobs = ' -j {0}'.format(config.ccNoOfJobs)
+        cmd = 'CodeChecker check {0} -e all -b "cd {1} {2} && make {0}" -o {3}'.format(jobs, self.repo, makeClean, config.getTmpDir())
         self.runCmd(cmd)
     
     def store(self, tag):
-        cmd = 'CodeChecker store ' + config.getTmpDir() + ' -n ' + config.getCcRunName() + ' --tag ' + tag
+        cmd = 'CodeChecker store {0} -n {1} --tag {2}'.format(config.getTmpDir(), config.getCcRunName(), tag)
         self.runCmd(cmd)
     
     def diffResolved(self, baseRun, newRun):
-        cmd = 'CodeChecker cmd diff -b ' + baseRun + ' -n ' + newRun + ' --resolved -o json'
+        cmd = 'CodeChecker cmd diff -b {0} -n {1} --resolved -o json'.format(baseRun, newRun)
         stdoutData = self.runCmd(cmd).decode(sys.stdout.encoding)
         output = self.getDataAfterInfoLog(stdoutData)
         out = []
