@@ -12,13 +12,16 @@ class CodeChecker():
             self.repo = repo
     
     def check(self, clean = False):
-        makeClean = ''
         if clean:
-            makeClean = ' && make clean'
+            cmd = 'cd {0} && make clean'.format(self.repo)
+            self.runCmd(cmd)
         jobs = ''
         if config.ccNoOfJobs > 1:
             jobs = ' -j {0}'.format(config.ccNoOfJobs)
-        cmd = 'CodeChecker check {0} -e all -b "cd {1} {2} && make {0}" -o {3}'.format(jobs, self.repo, makeClean, config.getTmpDir())
+        checkers = '-e all'
+        #if len(config.customCheckers) > 0:
+        #    checkers = '-d all -e {0}'.format(' -e '.join(config.customCheckers.split(',')))
+        cmd = 'CodeChecker check {0} -e all -b "cd {1} && make {0}" -o {2}'.format(jobs, self.repo, config.getTmpDir())
         self.runCmd(cmd)
     
     def store(self, tag):

@@ -9,7 +9,7 @@ class Config():
         self.ccVenv = configParser['CodeChecker']['relativeVenv']
         self.ccDbFile = configParser['CodeChecker']['dbFile']
         self.ccRunName = configParser['CodeChecker']['runName']
-        self.ccNoOfJobs = configParser['CodeChecker']['noOfJobs']
+        self.ccNoOfJobs = int(configParser['CodeChecker']['noOfJobs'])
         self.noOfLinesBefore = int(configParser['CodeFixer']['linesBeforeBug'])
         self.noOfLinesAfter = int(configParser['CodeFixer']['linesAfterBug'])
         self.cfDbFile = configParser['CodeFixer']['dbFile']
