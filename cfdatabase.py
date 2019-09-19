@@ -21,7 +21,9 @@ class CFDatabase():
             id integer PRIMARY KEY AUTOINCREMENT,
             bugged_code text NOT NULL,
             fixed_code text NOT NULL,
-            checker text NOT NULL);"""
+            checker text NOT NULL,
+            message text NOT NULL,
+            line integer NOT NULL);"""
         globalsTable = """
             CREATE TABLE IF NOT EXISTS globals (
             id integer PRIMARY KEY AUTOINCREMENT,
@@ -80,18 +82,18 @@ class CFDatabase():
         cursor.close()
     
     def getAllFixData(self):
-        return self.executeAndFetchAll("SELECT id, bugged_code, fixed_code, checker FROM fix_data")
+        return self.executeAndFetchAll("SELECT id, bugged_code, fixed_code, checker, message, line FROM fix_data")
         
     
     def getFixDataForChecker(self, checker):
-        return self.executeAndFetchAll("SELECT id, bugged_code, fixed_code, checker FROM fix_data WHERE checker=?", (checker,))
+        return self.executeAndFetchAll("SELECT id, bugged_code, fixed_code, checker, message, line FROM fix_data WHERE checker=?", (checker,))
     
     def clean(self):
         cursor = self.connection.cursor()
         cursor.execute('DELETE FROM fix_data')
     
-    def store(self, bugCode, fixCode, checker):
+    def store(self, bugCode, fixCode, checker, message, line):
         cursor = self.connection.cursor()
-        cursor.execute("INSERT INTO fix_data (bugged_code, fixed_code, checker) VALUES (?, ?, ?)",(bugCode, fixCode, checker,))
+        cursor.execute("INSERT INTO fix_data (bugged_code, fixed_code, checker, message, line) VALUES (?, ?, ?, ?, ?)",(bugCode, fixCode, checker, message, line,))
         self.connection.commit()
         cursor.close()

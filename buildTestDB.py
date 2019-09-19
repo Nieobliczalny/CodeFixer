@@ -77,7 +77,7 @@ class TestDbBuilder():
         #TODO: Possible improvement here
         if len(usedDiffs) != 1:
             return None
-        return entities.FixData(bugCodeFragment, fixCodeFragment, bugData.getChecker())
+        return entities.FixData(bugCodeFragment, fixCodeFragment, bugData.getChecker(), bugData.getMessage(), bugData.getLine() - bugData.getStartLine())
 
     def prepareEnv(self, clean = False):
         print('Preparing train db... ', end = '')
@@ -114,7 +114,7 @@ class TestDbBuilder():
             print('done')
             if fixData is not None:
                 print('Storing fixData... ', end = '')
-                self.db.store(fixData.getBugCode(), fixData.getFixCode(), fixData.getChecker())
+                self.db.store(fixData.getBugCode(), fixData.getFixCode(), fixData.getChecker(), fixData.getMessage(), fixData.getLine())
                 print('done')
         print('Storing CodeChecker results for this version... ', end = '')
         self.codeChecker.store(self.commits[self.currentCommitIndex])
