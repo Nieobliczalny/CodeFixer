@@ -37,7 +37,6 @@ class TestDbBuilder():
         return True
     
     def getDiffResolvedIds(self):
-        self.codeChecker.check(True)
         resolved = self.codeChecker.diffResolved(config.getCcRunName(), config.getTmpDir())
         ids = []
         for bug in resolved:
@@ -85,17 +84,20 @@ class TestDbBuilder():
         print('done')
         print('Loading commit list... ', end = '')
         self.loadCommitList(clean)
-        print('done')
-        print('Checking out to root... ', end = '')
         self.currentCommitIndex = len(self.commits)
-        self.checkoutToNextVersion()
         print('done')
         if clean:
+            print('Checking out to root... ', end = '')
+            self.checkoutToNextVersion()
+            print('done')
             print('Initial analysis... ', end = '')
             self.codeChecker.check(True)
             print('done')
             print('Storing initial results... ', end = '')
             self.codeChecker.store(self.commits[self.currentCommitIndex])
+            print('done')
+            print('Storing version information... ', end = '')
+            self.db.storeLastCommit(self.commits[self.currentCommitIndex])
             print('done')
             print('Cleaning up tmp directory... ', end = '')
             shutil.rmtree(config.getTmpDir())
