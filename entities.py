@@ -1,5 +1,5 @@
 class BugData():
-    def __init__(self, startLine, endLine, file, checker, status, message, line):
+    def __init__(self, startLine, endLine, file, checker, status, message, line, reviewData):
         self.startLine = startLine
         self.endLine = endLine
         self.file = file
@@ -7,6 +7,9 @@ class BugData():
         self.status = status
         self.message = message
         self.line = line
+        self.reviewStatus = 'unreviewed'
+        if reviewData is not None:
+            self.reviewStatus = reviewData[0]
     
     def getStartLine(self):
         return self.startLine
@@ -28,6 +31,9 @@ class BugData():
     
     def getStatus(self):
         return self.status
+    
+    def getReviewStatus(self):
+        return self.reviewStatus
 
 class FixData():
     def __init__(self, bugCode, fixCode, checker, message, line):
