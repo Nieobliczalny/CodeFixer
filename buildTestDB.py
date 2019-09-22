@@ -20,9 +20,12 @@ class TestDbBuilder():
         self.commits = self.vcs.getAllVersions(config.getBranch())
         if not clean:
             lastCommit = self.db.getLastCommit()
-            lastIndex = self.commits.index(lastCommit)
-            self.commits = self.commits[0:lastIndex]
-
+            lastIndex = self.commits.index(lastCommit) + 1
+            if lastIndex < len(self.commits) - 1:
+                self.commits = self.commits[0:lastIndex]
+            self.currentCommitIndex = len(self.commits) - 1
+        else:
+            self.currentCommitIndex = len(self.commits)
     
     def prepareDb(self, clean = False):
         self.db = CFDatabase(config.getCfDbFile())
@@ -37,7 +40,7 @@ class TestDbBuilder():
         return True
     
     def getDiffResolvedIds(self):
-        resolved = self.codeChecker.diffResolved(config.getCcRunName(), config.getTmpDir())
+        resolved = self.codeChecker.diffResolved(config.getCcRunName(), config.getTmpDir(), self.ccdb)
         ids = []
         for bug in resolved:
             ids.append(bug['reportId'])
@@ -84,7 +87,6 @@ class TestDbBuilder():
         print('done')
         print('Loading commit list... ', end = '')
         self.loadCommitList(clean)
-        self.currentCommitIndex = len(self.commits)
         print('done')
         if clean:
             print('Checking out to root... ', end = '')
@@ -110,14 +112,24 @@ class TestDbBuilder():
         print('Getting list of resolved bugs for version', self.commits[self.currentCommitIndex],'... ', end = '')
         ids = self.getDiffResolvedIds()
         print('done')
+        bugNo = 1
+        allBugs = len(ids)
+        anyStored = False
         for id in ids:
-            print('Parsing data for bug (#', id, ')... ', sep = '', end = '')
+            print('Parsing data for bug ({0}/{1}, #{2})...'.format(bugNo, allBugs, id), sep = '', end = '')
             fixData = self.extractCode(id)
+            bugNo = bugNo + 1
             print('done')
             if fixData is not None:
                 print('Storing fixData... ', end = '')
                 self.db.store(fixData.getBugCode(), fixData.getFixCode(), fixData.getChecker(), fixData.getMessage(), fixData.getLine())
+                anyStored = True
                 print('done')
+            if bugNo % 100 == 0 and anyStored:
+                self.db.commit()
+                anyStored = False
+        if anyStored:
+            self.db.commit()
         print('Storing CodeChecker results for this version... ', end = '')
         self.codeChecker.store(self.commits[self.currentCommitIndex])
         print('done')

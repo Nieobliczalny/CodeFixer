@@ -10,12 +10,21 @@ class Config():
         self.ccDbFile = configParser['CodeChecker']['dbFile']
         self.ccRunName = configParser['CodeChecker']['runName']
         self.ccNoOfJobs = int(configParser['CodeChecker']['noOfJobs'])
+        self.ccUseNativeDiffResolved = self.toBool(configParser['CodeChecker']['useNativeDiff'], True)
         self.noOfLinesBefore = int(configParser['CodeFixer']['linesBeforeBug'])
         self.noOfLinesAfter = int(configParser['CodeFixer']['linesAfterBug'])
         self.cfDbFile = configParser['CodeFixer']['dbFile']
         self.repoDir = configParser['Repository']['path']
         self.repoBranch = configParser['Repository']['branch']
         self.tmpDir = configParser['Other']['tmpDir']
+    
+    def toBool(self, value, defaultValue):
+        if value == 'true':
+            return True
+        elif value == 'false':
+            return False
+        else:
+            return defaultValue
     
     def getCcDbFile(self):
         return self.ccDbFile

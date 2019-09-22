@@ -34,7 +34,7 @@ class CCDatabase():
 
     def getAllBugs(self):
         #TODO: Ignore bugs marked as false-positive or intentional
-        return self.executeAndFetchAll("SELECT id,detection_status FROM reports WHERE detection_status IN ('new', 'unresolved', 'reopened')")
+        return self.executeAndFetchAll("SELECT id, detection_status, bug_id FROM reports WHERE detection_status IN ('new', 'unresolved', 'reopened')")
     
     def getAllReports(self):
         return self.executeAndFetchAll("SELECT id FROM reports")

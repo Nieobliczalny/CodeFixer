@@ -3,6 +3,7 @@ from config import config
 import subprocess
 import sys
 import json
+import re
 
 class CodeChecker():
     def __init__(self, repo = None):
@@ -28,7 +29,13 @@ class CodeChecker():
         cmd = 'CodeChecker store {0} -n {1} --tag {2}'.format(config.getTmpDir(), config.getCcRunName(), tag)
         self.runCmd(cmd)
     
-    def diffResolved(self, baseRun, newRun):
+    def diffResolved(self, baseRun, newRun, db = None):
+        if config.ccUseNativeDiffResolved:
+            return self.nativeDiffResolved(baseRun, newRun)
+        else:
+            return self.customDiffResolved(baseRun, newRun, db)
+    
+    def nativeDiffResolved(self, baseRun, newRun):
         cmd = 'CodeChecker cmd diff -b {0} -n {1} --resolved -o json'.format(baseRun, newRun)
         stdoutData = self.runCmd(cmd).decode(sys.stdout.encoding)
         output = self.getDataAfterInfoLog(stdoutData)
@@ -38,6 +45,26 @@ class CodeChecker():
         except json.decoder.JSONDecodeError:
             pass
         return out
+    
+    def customDiffResolved(self, baseRun, newRun, db):
+        cmd = 'CodeChecker parse --print-steps {0}'.format(newRun)
+        stdoutData = self.runCmd(cmd).decode(sys.stdout.encoding)
+        lines = stdoutData.split("\n")
+        reportHashes = []
+        for line in lines:
+            if "Report hash" in line:
+                m = re.search('[0-9a-fA-F]{32}', line)
+                reportHashes.append(m.group(0))
+        print(len(reportHashes))
+        uniqueHashes = set(reportHashes)
+        print(len(uniqueHashes))
+        allBugs = db.getAllBugs()
+        hashToIdDict = dict([(x[2], x[0]) for x in allBugs])
+        allBugsHashes = set([x[2] for x in allBugs])
+        print(allBugs[0])
+        resolved = [{'reportId': hashToIdDict[x]} for x in list(allBugsHashes - uniqueHashes)]
+        print(len(resolved))
+        return resolved
     
     def getDataAfterInfoLog(self, text):
         lines = text.split('\n')

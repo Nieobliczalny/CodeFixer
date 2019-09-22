@@ -4,9 +4,11 @@ from pathlib import Path
 #TODO: Check for possible reuse of cursor
 class CFDatabase():
     connection = None
+    cursor = None
 
     def __init__(self, path):
         self.connection = self.connect(path)
+        self.cursor = self.connection.cursor()
     
     def connect(self, db):
         dbFile = Path(db)
@@ -44,30 +46,26 @@ class CFDatabase():
         return conn
     
     def __del__(self):
+        if self.cursor != None:
+            self.cursor.close()
         if self.connection != None:
             self.connection.close()
 
     #TODO: Extract common methods to base class
     def createParameter(self, conn, name, defaultValue):
-        cursor = conn.cursor()
-        cursor.execute('SELECT id, name, value FROM globals WHERE name=?', (name,))
-        isPresent = cursor.fetchone()
-        cursor.close()
+        self.cursor.execute('SELECT id, name, value FROM globals WHERE name=?', (name,))
+        isPresent = self.cursor.fetchone()
         if not isPresent or len(isPresent) != 3:
-            cursor = conn.cursor()
-            cursor.execute("INSERT INTO globals (name, value) VALUES (?, ?)",(name, defaultValue,))
+            self.cursor.execute("INSERT INTO globals (name, value) VALUES (?, ?)",(name, defaultValue,))
             conn.commit()
-            cursor.close()
 
     def executeAndFetchOne(self, query, params):
-        cursor = self.connection.cursor()
-        cursor.execute(query, params)
-        return cursor.fetchone()
+        self.cursor.execute(query, params)
+        return self.cursor.fetchone()
 
     def executeAndFetchAll(self, query, params = ()):
-        cursor = self.connection.cursor()
-        cursor.execute(query, params)
-        return cursor.fetchall()
+        self.cursor.execute(query, params)
+        return self.cursor.fetchall()
 
     def getLastCommit(self):
         name = 'lastCommit'
@@ -76,10 +74,8 @@ class CFDatabase():
 
     def storeLastCommit(self, value):
         name = 'lastCommit'
-        cursor = self.connection.cursor()
-        cursor.execute("UPDATE globals SET value=? WHERE name=?", (value, name,))
-        self.connection.commit()
-        cursor.close()
+        self.cursor.execute("UPDATE globals SET value=? WHERE name=?", (value, name,))
+        self.commit()
     
     def getAllFixData(self):
         return self.executeAndFetchAll("SELECT id, bugged_code, fixed_code, checker, message, line FROM fix_data")
@@ -89,11 +85,10 @@ class CFDatabase():
         return self.executeAndFetchAll("SELECT id, bugged_code, fixed_code, checker, message, line FROM fix_data WHERE checker=?", (checker,))
     
     def clean(self):
-        cursor = self.connection.cursor()
-        cursor.execute('DELETE FROM fix_data')
+        self.cursor.execute('DELETE FROM fix_data')
     
     def store(self, bugCode, fixCode, checker, message, line):
-        cursor = self.connection.cursor()
-        cursor.execute("INSERT INTO fix_data (bugged_code, fixed_code, checker, message, line) VALUES (?, ?, ?, ?, ?)",(bugCode, fixCode, checker, message, line,))
+        self.cursor.execute("INSERT INTO fix_data (bugged_code, fixed_code, checker, message, line) VALUES (?, ?, ?, ?, ?)",(bugCode, fixCode, checker, message, line,))
+
+    def commit(self):
         self.connection.commit()
-        cursor.close()
