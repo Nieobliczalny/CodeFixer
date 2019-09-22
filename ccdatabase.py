@@ -33,7 +33,7 @@ class CCDatabase():
         return cursor.fetchall()
 
     def getAllBugs(self):
-        return self.executeAndFetchAll("SELECT r.id, r.detection_status, r.bug_id FROM reports r LEFT JOIN review_statuses rs ON r.bug_id = rs.bug_hash WHERE r.detection_status IN ('new', 'unresolved', 'reopened') AND rs.status IN (NULL, 'confirmed')")
+        return self.executeAndFetchAll("SELECT r.id, r.detection_status, r.bug_id FROM reports r LEFT JOIN review_statuses rs ON r.bug_id = rs.bug_hash WHERE r.detection_status IN ('new', 'unresolved', 'reopened') AND (rs.status IS NULL OR rs.status='confirmed')")
     
     def getAllReports(self):
         return self.executeAndFetchAll("SELECT id FROM reports")
@@ -57,7 +57,7 @@ class CCDatabase():
 
     def getAllBugsForChecker(self, checker):
         params = (checker,)
-        return self.executeAndFetchAll("SELECT r.id, r.detection_status, r.file_id FROM reports r LEFT JOIN review_statuses rs ON r.bug_id = rs.bug_hash WHERE r.checker_id=? AND r.detection_status IN ('new', 'unresolved', 'reopened') AND rs.status IN (NULL, 'confirmed')", params)
+        return self.executeAndFetchAll("SELECT r.id, r.detection_status, r.file_id FROM reports r LEFT JOIN review_statuses rs ON r.bug_id = rs.bug_hash WHERE r.checker_id=? AND r.detection_status IN ('new', 'unresolved', 'reopened') AND (rs.status IS NULL OR rs.status='confirmed')", params)
     
     def getFileData(self, filename):
         params = (filename,)
