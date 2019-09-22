@@ -23,7 +23,7 @@ class TestDbBuilder():
             lastIndex = self.commits.index(lastCommit) + 1
             if lastIndex < len(self.commits) - 1:
                 self.commits = self.commits[0:lastIndex]
-            self.currentCommitIndex = len(self.commits) - 1
+            self.currentCommitIndex = lastIndex - 1
         else:
             self.currentCommitIndex = len(self.commits)
     
