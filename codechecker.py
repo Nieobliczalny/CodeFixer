@@ -55,15 +55,12 @@ class CodeChecker():
             if "Report hash" in line:
                 m = re.search('[0-9a-fA-F]{32}', line)
                 reportHashes.append(m.group(0))
-        print(len(reportHashes))
+
         uniqueHashes = set(reportHashes)
-        print(len(uniqueHashes))
         allBugs = db.getAllBugs()
         hashToIdDict = dict([(x[2], x[0]) for x in allBugs])
         allBugsHashes = set([x[2] for x in allBugs])
-        print(allBugs[0])
         resolved = [{'reportId': hashToIdDict[x]} for x in list(allBugsHashes - uniqueHashes)]
-        print(len(resolved))
         return resolved
     
     def getDataAfterInfoLog(self, text):
