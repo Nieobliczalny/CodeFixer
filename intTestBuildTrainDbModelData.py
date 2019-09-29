@@ -1,7 +1,7 @@
 import unittest
 
 import buildTestDB
-from buildModelData import ModelDataBuilder
+from modelDataBuilder import ModelDataBuilder
 from cfdatabase import CFDatabase
 from config import config
 
