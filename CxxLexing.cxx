@@ -33,6 +33,36 @@ void cleanSymbols()
     symbols.clear();
 }
 
+char* escapeSymbol(const char* symbol)
+{
+    int noEscapeChars = 0;
+    int symbolLength = 0;
+    int i = 0, j = 0;
+    while (symbol[i])
+    {
+        if (symbol[i] == '"' || symbol[i] == '\\')
+        {
+            noEscapeChars++;
+        }
+        symbolLength++;
+        i++;
+    }
+    char* newSymbol = new char[symbolLength + noEscapeChars + 1];
+    i = 0;
+    while (symbol[i])
+    {
+        if (symbol[i] == '"' || symbol[i] == '\\')
+        {
+            newSymbol[j++] = '\\';
+        }
+        newSymbol[j] = symbol[i];
+        j++;
+        i++;
+    }
+    newSymbol[j] = '\0';
+    return newSymbol;
+}
+
 #include <iostream>
 
 using std::cout;
@@ -51,7 +81,9 @@ int main(void)
         }
         if (token == T_CHARACTER_LITERAL || token == T_STRING_LITERAL || token == T_NUMBER || token == T_ID || token == T_ESCAPED)
         {
-            cout << "{\"token\":\"" << token << "\", \"has_value\": true, \"value\": \"" << symbols[yylval] << "\"}";
+            char* value = escapeSymbol(symbols[yylval]);
+            cout << "{\"token\":\"" << token << "\", \"has_value\": true, \"value\": \"" << value << "\"}";
+            delete [] value;
         }
         else cout << "{\"token\":\"" << token << "\", \"has_value\": false}";
         addComma = true;

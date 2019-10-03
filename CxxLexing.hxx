@@ -94,6 +94,12 @@
 #define T_ID 347
 #define T_ESCAPED 348
 
+//Not used here, but used in LSTM model:
+#define T_ZERO 0
+#define T_SOS 349
+#define T_EOS 350
+#define T_UNK 351
+
 int yylval;
 
 std::vector<char*> symbols;
@@ -101,3 +107,4 @@ std::vector<char*> symbols;
 int addSymbol(const char* text, int length);
 int findSymbol(const char* text);
 void cleanSymbols();
+char* escapeSymbol(const char* symbol);
