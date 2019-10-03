@@ -4,3 +4,5 @@ __pycache__
 __pycache__/*
 CxxLexer
 CxxLexer.c
+config.ini
+*.txt
