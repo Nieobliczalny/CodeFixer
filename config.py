@@ -14,6 +14,9 @@ class Config():
         self.noOfLinesBefore = int(configParser['CodeFixer']['linesBeforeBug'])
         self.noOfLinesAfter = int(configParser['CodeFixer']['linesAfterBug'])
         self.cfDbFile = configParser['CodeFixer']['dbFile']
+        self.cfLabelThreshold = int(configParser['CodeFixer']['labelThreshold'])
+        self.cfNoOfUnkTokens = int(configParser['CodeFixer']['noOfUnkTokens'])
+        self.cfDictFilenameFormat = configParser['CodeFixer']['dictFilenameFormat']
         self.repoDir = configParser['Repository']['path']
         self.repoBranch = configParser['Repository']['branch']
         self.tmpDir = configParser['Other']['tmpDir']
@@ -52,6 +55,15 @@ class Config():
     
     def getCfDbFile(self):
         return self.cfDbFile
+    
+    def getCfLabelThreshold(self):
+        return self.cfLabelThreshold
+        
+    def getCfNoOfUnkTokens(self):
+        return self.cfNoOfUnkTokens
+        
+    def getCfDictFilenameFormat(self):
+        return self.cfDictFilenameFormat
     
     def getRepoDir(self):
         return self.repoDir
