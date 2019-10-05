@@ -156,7 +156,7 @@ pp_number						(\.?{digit}({digit}|{non_digit}|[eE][-+]|\.)*)
 
 \n								|
 \r                              |
-{ws}+							{ /* Throw away whitespace */ }
+{ws}							{ return (yytext[0]); }
 .								{ return (yytext[0]); }
 
 %%
