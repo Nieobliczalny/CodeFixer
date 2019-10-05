@@ -92,7 +92,7 @@ class DictionaryBuilder():
         print("Done, converted {0} tokens".format(tokensLen))
 
         # Labelizing
-        labelDb = []
+        labelDb = [NO_VALUE_LABEL]
         # UNK
         print("Adding UNK token labels")
         for i in range(config.cfNoOfUnkTokens):
