@@ -6,3 +6,4 @@ CxxLexer
 CxxLexer.c
 config.ini
 *.txt
+*.dict
