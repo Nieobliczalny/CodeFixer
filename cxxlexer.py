@@ -17,3 +17,16 @@ class CxxLexer():
         process = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         proc_stdout = process.communicate(input=inputData.encode())[0].strip()
         return proc_stdout
+    
+    def detokenize(self, tokens):
+        code = []
+        specials = ['asm', 'auto', 'bool', 'break', 'case', 'catch', 'char', 'class', 'const', 'const_cast', 'continue', 'default', 'delete', 'do', 'double', 'dynamic_cast', 'else', 'enum', 'explicit', 'export', 'extern', 'false', 'float', 'for', 'friend', 'goto', 'if', 'inline', 'int', 'long', 'mutable', 'namespace', 'new', 'operator', 'private', 'protected', 'public', 'register', 'reinterpret_cast', 'return', 'short', 'signed', 'sizeof', 'static', 'static_cast', 'struct', 'switch', 'template', 'this', 'throw', 'true', 'try', 'typedef', 'typeid', 'typename', 'union', 'unsigned', 'using', 'virtual', 'void', 'volatile', 'wchar_t', 'while', '::', '...', '<<', '>>', '==', '!=', '<=', '>=', '&&', '||', '++', '--', '->*', '->', '.*', '+=', '-=', '*=', '/=', '%=', '^=', '&=', '|=', '>>=', '<<=']
+        for token in tokens:
+            tokenId = int(token['token'])
+            if tokenId < 256:
+                code.append(chr(tokenId))
+            elif tokenId > 257 and tokenId < 346:
+                code.append(specials[tokenId - 258])
+            else:
+                code.append(token['value'])
+        return "".join(code)

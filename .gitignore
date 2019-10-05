@@ -7,3 +7,4 @@ CxxLexer.c
 config.ini
 *.txt
 *.dict
+*.train

@@ -17,6 +17,7 @@ class Config():
         self.cfLabelThreshold = int(configParser['CodeFixer']['labelThreshold'])
         self.cfNoOfUnkTokens = int(configParser['CodeFixer']['noOfUnkTokens'])
         self.cfDictFilenameFormat = configParser['CodeFixer']['dictFilenameFormat']
+        self.cfTrainFilenameFormat = configParser['CodeFixer']['trainFilenameFormat']
         self.repoDir = configParser['Repository']['path']
         self.repoBranch = configParser['Repository']['branch']
         self.tmpDir = configParser['Other']['tmpDir']
@@ -64,6 +65,9 @@ class Config():
         
     def getCfDictFilenameFormat(self):
         return self.cfDictFilenameFormat
+        
+    def getCfTrainFilenameFormat(self):
+        return self.cfTrainFilenameFormat
     
     def getRepoDir(self):
         return self.repoDir
