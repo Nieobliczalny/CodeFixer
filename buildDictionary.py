@@ -3,6 +3,7 @@ from cfdatabase import CFDatabase
 from config import config
 from cxxlexer import CxxLexer
 from checkers import Checkers
+import globals
 import sys
 from collections import deque
 from itertools import groupby
@@ -33,7 +34,6 @@ class DictionaryBuilder():
         tokens = deque()
         tokensLen = 0
         labels = {}
-        NO_VALUE_LABEL = "<NO_VALUE>"
         i = 0
         tokensLen = 0
 
@@ -77,7 +77,7 @@ class DictionaryBuilder():
             # Count occurrences of each label
             allTokens = tokens1 + tokens2 + extra
             for token in allTokens:
-                value = NO_VALUE_LABEL
+                value = globals.emptyValue
                 if token['has_value']:
                     value = token['value']
                 if value in labels:
@@ -92,7 +92,7 @@ class DictionaryBuilder():
         print("Done, converted {0} tokens".format(tokensLen))
 
         # Labelizing
-        labelDb = [NO_VALUE_LABEL]
+        labelDb = [globals.emptyValue]
         # UNK
         print("Adding UNK token labels")
         for i in range(config.cfNoOfUnkTokens):
@@ -139,10 +139,9 @@ def main(checker):
     builder.build(checker)
 
 if __name__ == "__main__":
-    checkers = ['deadcode.DeadStores']
     if len(sys.argv) < 2:
         print("No checker name given, exiting...")
-    elif sys.argv[1] not in checkers:
+    elif sys.argv[1] not in globals.availableCheckers:
         print("No handler found for specified checker, exiting...")
     else:
         main(sys.argv[1])

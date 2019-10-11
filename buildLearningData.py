@@ -46,11 +46,9 @@ def main(checker):
     builder.build(checker)
 
 if __name__ == "__main__":
-    #TODO: Same value in several files, move to common one
-    checkers = ['deadcode.DeadStores']
     if len(sys.argv) < 2:
         print("No checker name given, exiting...")
-    elif sys.argv[1] not in checkers:
+    elif sys.argv[1] not in globals.availableCheckers:
         print("No handler found for specified checker, exiting...")
     else:
         main(sys.argv[1])

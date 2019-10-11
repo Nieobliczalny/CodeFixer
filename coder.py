@@ -1,4 +1,5 @@
 from cxxlexer import CxxLexer
+import globals
 
 class Coder():
     def __init__(self, dictionary):
@@ -58,8 +59,6 @@ class Coder():
             for unk in unks:
                 unkList.append(unk['value'])
                 unkData.append(unk)
-        #TODO: Same value across files, move it to common file
-        NO_VALUE_LABEL = "<NO_VALUE>"
         for token in tokens:
             token['token'] = int(token['token'])
             if token['token'] in self.valuedTokens:
@@ -75,7 +74,7 @@ class Coder():
                     newTokens.append(newToken)
             else:
                 if not token['has_value']:
-                    token['value'] = self.dictionary.index(NO_VALUE_LABEL)
+                    token['value'] = self.dictionary.index(globals.emptyValue)
                 newTokens.append(token)
         return (newTokens, unkData)
     def convertFromUnks(self, tokens, unkList):
@@ -105,9 +104,7 @@ class Coder():
     def convertFromNumList(self, numList):
         tokens = []
         numListLen = len(numList)
-        #TODO: Same value across files, move it to common file
-        NO_VALUE_LABEL = "<NO_VALUE>"
-        noValueLabelIndex = self.dictionary.index(NO_VALUE_LABEL)
+        noValueLabelIndex = self.dictionary.index(globals.emptyValue)
         i = 0
         while i < numListLen:
             numList[i + 1] -= 352
@@ -119,16 +116,28 @@ class Coder():
             tokens.append(token)
             i += 2
         return tokens
-    def convertToOneHot(self, numList):
-        oneHotList = []
-        noWords = self.dictionary.length() + 352
+    def convertToOneHot(self, numList, outputArray):
+        i = 0
         for num in numList:
-            oneHot = [0] * noWords
-            oneHot[num] = 1
-            oneHotList.append(oneHot)
-        return oneHotList
+            outputArray[i][num] = 1
+            i += 1
+        return outputArray
     def convertFromOneHot(self, oneHotList):
         numList = []
         for oneHot in oneHotList:
             numList.append(oneHot.index(1))
         return numList
+    def applyPadding(self, numList, noElements):
+        noValueLabelIndex = self.dictionary.index(globals.emptyValue) + 352
+        newValue = numList + [0, noValueLabelIndex] * noElements
+        return newValue
+    def removePadding(self, numList):
+        paddingIndex = -1
+        i = 0
+        numListLen = len(numList)
+        while i < numListLen:
+            if numList[i] == 0:
+                paddingIndex = i
+                break
+            i += 2
+        return numList[:paddingIndex]
