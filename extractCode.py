@@ -118,3 +118,24 @@ class CodeExtractor():
         self.extractBugCode()
         self.loadDiff(diff)
         self.extractFixCode()
+    
+    def applyFix(self, fixFragment):
+        code = self.code
+        startLine = self.getStartLine()
+        endLine = self.getEndLine()
+        if startLine >= self.bugData.getStartLine() or endLine < self.bugData.getEndLine():
+            #TODO: Implement custom errors
+            raise ValueError
+        self.bugCodeFragment = self.code[startLine:endLine]
+        self.loadCodeFromText(fixFragment)
+        if endLine < len(code):
+            self.code[-1] += '\n'
+        wholeCode = code[:startLine] + self.code + code[endLine:]
+        self.code = wholeCode
+    
+    def saveToFile(self, fileName):
+        with open(self.bugData.getFile(), 'w') as file:
+            file.write(self.getCodeAsText())
+    
+    def getCodeAsText(self):
+        return ''.join(self.code)

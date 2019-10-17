@@ -27,6 +27,9 @@ class CxxLexer():
                 code.append(chr(tokenId))
             elif tokenId > 257 and tokenId < 346:
                 code.append(specials[tokenId - 258])
-            else:
+            elif tokenId < 352:
                 code.append(token['value'])
+            else:
+                # Unknown / invalid token, ignore it
+                code.append('')
         return "".join(code)

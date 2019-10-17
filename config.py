@@ -18,10 +18,12 @@ class Config():
         self.cfNoOfUnkTokens = int(configParser['CodeFixer']['noOfUnkTokens'])
         self.cfDictFilenameFormat = configParser['CodeFixer']['dictFilenameFormat']
         self.cfTrainFilenameFormat = configParser['CodeFixer']['trainFilenameFormat']
+        self.cfModelFilenameFormat = configParser['CodeFixer']['modelFilenameFormat']
         self.cfTrainNoEpochs = int(configParser['CodeFixer']['trainNoEpochs'])
         self.cfTrainBatchSize = int(configParser['CodeFixer']['trainBatchSize'])
         self.cfTrainHiddenSize = int(configParser['CodeFixer']['trainHiddenSize'])
         self.cfTrainNumLayers = int(configParser['CodeFixer']['trainNumLayers'])
+        self.cfVerifyPrediction = self.toBool(configParser['CodeFixer']['verifyPrediction'], False)
         self.repoDir = configParser['Repository']['path']
         self.repoBranch = configParser['Repository']['branch']
         self.tmpDir = configParser['Other']['tmpDir']
@@ -72,6 +74,12 @@ class Config():
         
     def getCfTrainFilenameFormat(self):
         return self.cfTrainFilenameFormat
+        
+    def getCfModelFilenameFormat(self):
+        return self.cfModelFilenameFormat
+        
+    def getCfVerifyPrediction(self):
+        return self.cfVerifyPrediction
     
     def getRepoDir(self):
         return self.repoDir
