@@ -3,6 +3,7 @@ from config import config
 from coder import Coder
 from checkers import Checkers
 from dictionary import Dictionary
+import globals
 import sys
 import json
 
@@ -33,7 +34,7 @@ class LearningDataBuilder():
             while i < allDataLen:
                 checkerInfo = self.checkers.extractTokensForChecker(checker, allData[i][4])
                 encodedBugData, initialUnkList = self.coder.encode(allData[i][1], checkerData = checkerInfo)
-                encodedFixData, finalUnkList = self.coder.encode(allData[i][2], unkList = initialUnkList)
+                encodedFixData, finalUnkList = self.coder.encode(allData[i][2], unkList = initialUnkList, reverse = False)
                 f.write(json.dumps({'x': encodedBugData, 'y': encodedFixData}) + '\n')
 
                 i += 1

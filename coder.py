@@ -1,5 +1,6 @@
 from cxxlexer import CxxLexer
 import globals
+import numpy as np
 
 class Coder():
     def __init__(self, dictionary):
@@ -11,7 +12,7 @@ class Coder():
         #define T_ID 347
         #define T_ESCAPED 348
         self.valuedTokens = [256, 257, 346, 347, 348]
-    def encode(self, code, checkerData = [], unkList = []):
+    def encode(self, code, checkerData = [], unkList = [], reverse = True):
         # Coding process:
         # Tokenize
         tokens = self.tokenize(code)
@@ -22,17 +23,19 @@ class Coder():
             tokens = tokens + checkerData
         # Replace tokens not in dictionary with UNKs
         (newTokens, unkList) = self.convertToUnks(tokens, unkList)
-        # Reverse input
-        tokens = newTokens[::-1]
         # Convert to numeric list
-        numList = self.convertToNumList(tokens)
+        numList = self.convertToNumList(newTokens)
+        # Reverse input
+        if reverse:
+            numList = numList[::-1]
         return (numList, unkList)
-    def decode(self, numList, unkList):
+    def decode(self, numList, unkList, reverse = False):
         # Decoding process:
+        # Reverse input
+        if reverse:
+            numList = numList[::-1]
         # Convert to token list
         tokens = self.convertFromNumList(numList)
-        # Reverse input
-        tokens = tokens[::-1]
         # Replace UNKs with proper tokens
         tokens = self.convertFromUnks(tokens, unkList)
         # If checker data exists - remove it
@@ -64,7 +67,7 @@ class Coder():
             if token['token'] in self.valuedTokens:
                 if self.dictionary.contains(token['value']):
                     token['value'] = self.dictionary.index(str(token['value']))
-                    newTokens.append(token) 
+                    newTokens.append(token)
                 else:
                     if token['value'] not in unkList:
                         unkList.append(token['value'])
@@ -125,7 +128,7 @@ class Coder():
     def convertFromOneHot(self, oneHotList):
         numList = []
         for oneHot in oneHotList:
-            numList.append(oneHot.index(1))
+            numList.append(np.argmax(oneHot, 0))
         return numList
     def applyPadding(self, numList, noElements):
         noValueLabelIndex = self.dictionary.index(globals.emptyValue) + 352
