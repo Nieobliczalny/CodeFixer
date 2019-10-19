@@ -8,14 +8,14 @@ import json
 import random
 from six.moves import urllib
 import tempfile
-import tensorflow as tf
-import tensorflow.keras as keras
+#import tensorflow as tf
+#import tensorflow.keras as keras
 
 import numpy as np
 import pandas as pd
-from keras.models import Sequential
-from keras.models import load_model
-from keras.layers import LSTM, RepeatVector, Dense, Activation, TimeDistributed
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.models import load_model
+from tensorflow.keras.layers import LSTM, RepeatVector, Dense, Activation, TimeDistributed
 
 class ModelBuilder():
     def __init__(self):
@@ -85,6 +85,7 @@ class ModelBuilder():
         print("Training model...")
         for k in range(startK, config.cfTrainNoEpochs):
             i = 0
+            model.reset_metrics()
             if k == startK:
                 i = startBatch
             while i < dataLen:
@@ -104,8 +105,8 @@ class ModelBuilder():
                         valueY = self.coder.applyPadding(valueY, noZerosToPad)
                     X_s[j - i] = self.coder.convertToOneHot(valueX, np.zeros((xMaxLen, self.totalDictionaryLength)))
                     Y_s[j - i] = self.coder.convertToOneHot(valueY, np.zeros((yMaxLen, self.totalDictionaryLength)))
-                model.fit(X_s, Y_s, batch_size=config.cfTrainBatchSize, epochs=1, verbose=2)
-                print("[{2}] Done batch {0}-{1}".format(i, end, k))
+                result = model.train_on_batch(X_s, Y_s)
+                print("[{2}] Done batch {0}-{1} (loss: {3:.3f}, accuracy: {4:.3f})".format(i, end, k, result[0], result[1]))
                 i += config.cfTrainBatchSize
                 batchSaveCounter += config.cfTrainBatchSize
                 if batchSaveCounter >= batchSaveThreshold:
