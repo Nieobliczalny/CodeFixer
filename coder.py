@@ -85,9 +85,12 @@ class Coder():
         for token in tokens:
             #define T_UNK 351
             if token['token'] == 351:
-                unkNo = int(self.dictionary.get(token['value']))
-                newToken = {'token': str(unkList[unkNo]['token']), 'has_value': True, 'value': str(unkList[unkNo]['value'])}
-                newTokens.append(newToken)
+                try:
+                    unkNo = int(self.dictionary.get(token['value']))
+                    newToken = {'token': str(unkList[unkNo]['token']), 'has_value': True, 'value': str(unkList[unkNo]['value'])}
+                    newTokens.append(newToken)
+                except ValueError:
+                    pass # Ignore invalid tokens
             elif token['token'] in self.valuedTokens:
                 token['token'] = str(token['token'])
                 token['value'] = str(self.dictionary.get(token['value']))

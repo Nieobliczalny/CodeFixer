@@ -11,7 +11,8 @@ import globals
 import sys
 import os
 
-from keras.models import load_model
+from tensorflow.keras.models import load_model
+import tensorflow.keras
 
 import numpy as np
 
@@ -87,6 +88,7 @@ class Predictor():
                 X[0] = self.coder.convertToOneHot(encodedBugData, np.zeros((MODEL_X_MAX_LEN, self.totalDictionaryLength)))
                 # Predict and convert from one-hot
                 Y = self.coder.convertFromOneHot(model.predict(X)[0])
+                print(Y)
                 # Decode
                 fixCodeFragment = self.coder.decode(Y, initialUnkList)
                 
