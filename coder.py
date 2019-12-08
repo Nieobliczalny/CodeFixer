@@ -1,6 +1,7 @@
 from cxxlexer import CxxLexer
 import globals
 import numpy as np
+import re
 
 class Coder():
     def __init__(self, dictionary):
@@ -12,6 +13,8 @@ class Coder():
         #define T_ID 347
         #define T_ESCAPED 348
         self.valuedTokens = [256, 257, 346, 347, 348]
+        self.patToken = re.compile("^T_([0-9]+)$")
+        self.patUnk = re.compile("^UNK_([0-9]+)$")
     def encode(self, code, checkerData = [], unkList = [], reverse = True):
         # Coding process:
         # Tokenize
@@ -46,7 +49,10 @@ class Coder():
                 tokenSosIndex = i
                 break
         if tokenSosIndex != -1:
-            tokens = tokens[:tokenSosIndex]
+            if reverse:
+                tokens = tokens[:tokenSosIndex]
+            else:
+                tokens = tokens[tokenSosIndex + 1:]
         # Detokenize
         code = self.detokenize(tokens)
         return code
@@ -73,12 +79,20 @@ class Coder():
                         unkList.append(token['value'])
                         unkData.append({'token': token['token'], 'value': token['value']})
                     #define T_UNK 351
-                    newToken = {'token': 351, 'has_value': True, 'value': self.dictionary.index(str(unkList.index(token['value'])))}
+                    newToken = {'token': 351, 'has_value': True, 'value': self.dictionary.index("UNK_{0}".format(unkList.index(token['value'])))}
                     newTokens.append(newToken)
             else:
-                if not token['has_value']:
-                    token['value'] = self.dictionary.index(globals.emptyValue)
-                newTokens.append(token)
+                value = "T_{0}".format(token['token'])
+                if self.dictionary.contains(value):
+                    token['value'] = self.dictionary.index(value)
+                    newTokens.append(token)
+                else:
+                    if value not in unkList:
+                        unkList.append(value)
+                        unkData.append({'token': token['token'], 'value': value})
+                    #define T_UNK 351
+                    newToken = {'token': 351, 'has_value': True, 'value': self.dictionary.index("UNK_{0}".format(unkList.index(value)))}
+                    newTokens.append(newToken)
         return (newTokens, unkData)
     def convertFromUnks(self, tokens, unkList):
         newTokens = []
@@ -86,7 +100,7 @@ class Coder():
             #define T_UNK 351
             if token['token'] == 351:
                 try:
-                    unkNo = int(self.dictionary.get(token['value']))
+                    unkNo = token['value']
                     newToken = {'token': str(unkList[unkNo]['token']), 'has_value': True, 'value': str(unkList[unkNo]['value'])}
                     newTokens.append(newToken)
                 except ValueError:
@@ -104,23 +118,25 @@ class Coder():
     def convertToNumList(self, tokens):
         numList = []
         for token in tokens:
-            numList.append(token['token'])
-            numList.append(token['value'] + 352) #Last known token is 351, so we start from 352
+            numList.append(token['value'])
         return numList
     def convertFromNumList(self, numList):
         tokens = []
         numListLen = len(numList)
-        noValueLabelIndex = self.dictionary.index(globals.emptyValue)
         i = 0
         while i < numListLen:
-            numList[i + 1] -= 352
-            token = {'token': numList[i], 'value': numList[i + 1]}
-            if numList[i + 1] == noValueLabelIndex:
-                token['has_value'] = False
+            value = str(self.dictionary.get(numList[i]))
+            match = self.patToken.match(value)
+            if match:
+                tokens.append({'token': int(match.group(1)), 'has_value': False})
             else:
-                token['has_value'] = True
-            tokens.append(token)
-            i += 2
+                match = self.patUnk.match(value)
+                if match:
+                    tokens.append({'token': 351, 'value': int(match.group(1)), 'has_value': True})
+                else:
+                    # Ignore specific token ID, since all values tokens are processed the same
+                    tokens.append({'token': 347, 'value': numList[i], 'has_value': True})
+            i += 1
         return tokens
     def convertToOneHot(self, numList, outputArray):
         i = 0
@@ -134,8 +150,7 @@ class Coder():
             numList.append(np.argmax(oneHot, 0))
         return numList
     def applyPadding(self, numList, noElements):
-        noValueLabelIndex = self.dictionary.index(globals.emptyValue) + 352
-        newValue = numList + [0, noValueLabelIndex] * noElements
+        newValue = numList + [0] * noElements
         return newValue
     def removePadding(self, numList):
         paddingIndex = -1
@@ -145,5 +160,5 @@ class Coder():
             if numList[i] == 0:
                 paddingIndex = i
                 break
-            i += 2
+            i += 1
         return numList[:paddingIndex]

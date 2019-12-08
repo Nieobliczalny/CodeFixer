@@ -12,3 +12,10 @@ class Checkers():
         pattern = "'(.+)'"  
         varName = re.search(pattern, message).group(0)[1:-1]
         return [{'token': 347, 'has_value': True, 'value': varName}]
+    def getModelStatsForChecker(self, checkerName):
+        if checkerName == 'deadcode.DeadStores':
+            return self.getModelStatsDeadStores()
+        #TODO: Custom errors
+        raise ValueError
+    def getModelStatsDeadStores(self):
+        return (75, 75, 10)

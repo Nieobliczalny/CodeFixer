@@ -41,6 +41,13 @@ class DictionaryBuilder():
         minTokens2Len = 9999
         maxTokens1Len = 0
         maxTokens2Len = 0
+        
+        uniqTokenIDs = {}
+        for tid in range(globals.firstAvailableToken):
+            uniqTokenIDs[tid] = 0
+        uniqTokenIDs[0] = 1   # T_ZERO
+        uniqTokenIDs[349] = 1 # T_SOS
+        uniqTokenIDs[351] = 1 # T_UNK
 
         while i < allDataLen:
             # Tokenize
@@ -84,6 +91,7 @@ class DictionaryBuilder():
                     labels[value] += 1
                 else:
                     labels[value] = 1
+                uniqTokenIDs[int(token['token'])] += 1
                 tokensLen += 1
             if len(newTokens) > 0:
                 tokens.append(newTokens)
@@ -96,7 +104,7 @@ class DictionaryBuilder():
         # UNK
         print("Adding UNK token labels")
         for i in range(config.cfNoOfUnkTokens):
-            labelDb.append("{0}".format(i))
+            labelDb.append("UNK_{0}".format(i))
         print("Done, current label DB has {0} entries".format(len(labelDb)))
 
         # Common occurrences
@@ -116,6 +124,11 @@ class DictionaryBuilder():
 
         # STL part
 
+        # Token IDs
+        for i in range(globals.firstAvailableToken):
+            if uniqTokenIDs[i] > 0:
+                labelDb.append("T_{0}".format(i))
+
         # Printout
         print("Uniqueing labels")
         labelsUnique = list(set(labelDb))
@@ -127,6 +140,10 @@ class DictionaryBuilder():
         print("Max no of tokens (fix): {0}".format(maxTokens2Len))
         print("Extracted labels:")
         print(labelsUnique)
+        print("Token uses:")
+        for i in range(globals.firstAvailableToken):
+            if uniqTokenIDs[i] > 0:
+                print("{0}: {1}".format(i, uniqTokenIDs[i]))
 
         # Save to file
         print("Writing to dictionary file")

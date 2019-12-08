@@ -58,7 +58,7 @@ class Predictor():
         print("Initializing coder...")
         self.dictionary = Dictionary(checker)
         self.coder = Coder(self.dictionary)
-        self.totalDictionaryLength = self.dictionary.length() + globals.firstAvailableToken
+        self.totalDictionaryLength = self.dictionary.length()
 
         # Predicting
         print("Starting predictions...")
@@ -81,7 +81,7 @@ class Predictor():
                 encodedBugData, initialUnkList = self.coder.encode(bugCodeFragment, checkerData = checkerInfo)
                 # Convert to one-hot
                 MODEL_X_MAX_LEN = model.get_layer(index = 0).input_shape[1]
-                noZerosToPad = int((MODEL_X_MAX_LEN - len(encodedBugData)) / 2)
+                noZerosToPad = MODEL_X_MAX_LEN - len(encodedBugData)
                 if noZerosToPad > 0:
                     encodedBugData = self.coder.applyPadding(encodedBugData, noZerosToPad)
                 X = np.zeros((1, MODEL_X_MAX_LEN, self.totalDictionaryLength))
