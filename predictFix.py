@@ -81,6 +81,12 @@ class Predictor():
                 encodedBugData, initialUnkList = self.coder.encode(bugCodeFragment, checkerData = checkerInfo)
                 # Convert to one-hot
                 MODEL_X_MAX_LEN = model.get_layer(index = 0).input_shape[1]
+                if len(encodedBugData) > MODEL_X_MAX_LEN:
+                    print("Bug #{0} - Code too big for model, ignored".format(i))
+                    continue
+                elif id == -1:
+                    print("Bug #{0} - Good to go".format(i))
+                    continue
                 noZerosToPad = MODEL_X_MAX_LEN - len(encodedBugData)
                 if noZerosToPad > 0:
                     encodedBugData = self.coder.applyPadding(encodedBugData, noZerosToPad)

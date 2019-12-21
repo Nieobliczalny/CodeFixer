@@ -8,3 +8,4 @@ config.ini
 *.txt
 *.dict
 *.train
+*.h5

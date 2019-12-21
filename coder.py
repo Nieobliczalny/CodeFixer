@@ -105,6 +105,8 @@ class Coder():
                     newTokens.append(newToken)
                 except ValueError:
                     pass # Ignore invalid tokens
+                except IndexError:
+                    newTokens.append({'token': 347, 'has_value': True, 'value': 'INDEX_ERROR'})
             elif token['token'] in self.valuedTokens:
                 token['token'] = str(token['token'])
                 token['value'] = str(self.dictionary.get(token['value']))

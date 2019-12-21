@@ -9,25 +9,16 @@ import gc
 import random
 from six.moves import urllib
 import tempfile
-#import tensorflow as tf
-#tf.compat.v1.disable_eager_execution()
-#import tensorflow.keras as keras
+import tensorflow as tf
+tf.keras.backend.clear_session()
 
 import numpy as np
-#import pandas as pd
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.models import load_model
 from tensorflow.keras.layers import LSTM, RepeatVector, Dense, Activation, TimeDistributed
 
-#from keras.models import Sequential
-#from keras.models import load_model
-#from keras.layers import LSTM, RepeatVector, Dense, Activation, TimeDistributed
-
 class ModelBuilder():
-    def __init__(self):
-        #gc.set_debug(gc.DEBUG_LEAK)
-        pass
-
+    '''
     def datagen(self, batchSize, xMaxLen, yMaxLen):
         while self.ObjInd < self.ObjMax:
             end = batchSize
@@ -49,6 +40,7 @@ class ModelBuilder():
             self.ObjInd += end
             #some code here to load and manipulate data into x and y. Mostly numpy functions
             yield x,y
+    '''
     
     def build(self, checker, startK, startBatch):
         # Initialize coder
@@ -94,16 +86,13 @@ class ModelBuilder():
         batchSaveIndex = 0
         batchSaveCounter = 0
         batchSaveThreshold = 10000
-        #with tf.device('/cpu:0'):
+        
         if startK == 0 and startBatch == 0:
             model = Sequential()
             model.add(LSTM(config.cfTrainHiddenSize, input_shape=(xMaxLen, self.totalDictionaryLength)))
             model.add(RepeatVector(yMaxLen))
-            #for _ in range(config.cfTrainNumLayers):
-            #    model.add(LSTM(config.cfTrainHiddenSize, return_sequences=True))
-            model.add(LSTM(150, return_sequences=True))
-            model.add(LSTM(150, return_sequences=True))
-            #model.add(LSTM(300, return_sequences=True))
+            for _ in range(config.cfTrainNumLayers):
+                model.add(LSTM(config.cfTrainHiddenSize, return_sequences=True))
             model.add(TimeDistributed(Dense(self.totalDictionaryLength)))
             model.add(Activation('softmax'))
             model.compile(loss='categorical_crossentropy',
