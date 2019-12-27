@@ -40,7 +40,9 @@ class CFDatabase():
             c.execute(globalsTable)
             c.close()
             del c
+            self.cursor = conn.cursor()
             self.createParameter(conn, 'lastCommit', '')
+            del self.cursor
         except Error as e:
             raise ValueError
         return conn
