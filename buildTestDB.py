@@ -144,9 +144,13 @@ class TestDbBuilder():
         while self.checkoutToNextVersion():
             self.findAndStoreFixDataForVersion()
     
+    def checkoutToTop(self):
+        self.vcs.checkout(config.getBranch())
+    
     def build(self, clean = False):
         self.prepareEnv(clean)
         self.iterateThroughVcsHistory()
+        self.checkoutToTop()
 
 def main(clean = False):
     builder = TestDbBuilder()
