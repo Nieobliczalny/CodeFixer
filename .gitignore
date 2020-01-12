@@ -5,7 +5,4 @@ __pycache__/*
 CxxLexer
 CxxLexer.c
 config.ini
-*.txt
-*.dict
 *.train
-*.h5
