@@ -104,6 +104,9 @@ class TestDbBuilder():
             print('Cleaning up tmp directory... ', end = '')
             shutil.rmtree(config.getTmpDir())
             print('done')
+            print('Cleaning up working directory... ', end = '')
+            self.codeChecker.clean()
+            print('done')
     
     def findAndStoreFixDataForVersion(self):
         print('Analyzing version', self.commits[self.currentCommitIndex], '... ', end = '')
@@ -138,6 +141,9 @@ class TestDbBuilder():
         print('done')
         print('Cleaning up tmp directory... ', end = '')
         shutil.rmtree(config.getTmpDir())
+        print('done')
+        print('Cleaning up working directory... ', end = '')
+        self.codeChecker.clean()
         print('done')
     
     def iterateThroughVcsHistory(self):

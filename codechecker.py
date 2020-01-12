@@ -14,8 +14,7 @@ class CodeChecker():
     
     def check(self, clean = False):
         if clean:
-            cmd = 'cd {0} && make clean'.format(self.repo)
-            self.runCmd(cmd)
+            self.clean()
         jobs = ''
         if config.ccNoOfJobs > 1:
             jobs = ' -j {0}'.format(config.ccNoOfJobs)
@@ -63,6 +62,10 @@ class CodeChecker():
         resolved = [{'reportId': hashToIdDict[x]} for x in list(allBugsHashes - uniqueHashes)]
         return resolved
     
+    def clean(self):
+        cmd = 'cd {0} && make clean'.format(self.repo)
+        self.runCmdClean(cmd)
+    
     def getDataAfterInfoLog(self, text):
         lines = text.split('\n')
         if len(lines) > 2:
@@ -72,5 +75,10 @@ class CodeChecker():
     def runCmd(self, cmd):
         command = '. ' + config.getCcPath() + config.getCcRelativeVenv() + ' && cd ' + config.getCcPath() + config.getCcRelativeBinPath() + ' && ./' + cmd
         process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        proc_stdout = process.communicate()[0].strip()
+        return proc_stdout
+    
+    def runCmdClean(self, cmd):
+        process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         proc_stdout = process.communicate()[0].strip()
         return proc_stdout
