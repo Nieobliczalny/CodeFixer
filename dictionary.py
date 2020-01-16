@@ -7,9 +7,7 @@ class Dictionary():
         with open(config.cfDictFilenameFormat.format(checker), "r") as f:
             fileData = f.read()
             self.dictionary = json.loads(fileData)
-            #self.dictionary.sort()
             self.sort()
-            print(self.dictionary)
     def index(self, value):
         if not self.contains(value):
             return -1
