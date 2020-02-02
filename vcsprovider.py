@@ -15,3 +15,5 @@ class VCSProvider():
         raise NotImplementedError
     def applyChange(self, change):
         raise NotImplementedError
+    def applyChangeForFile(self, file):
+        raise NotImplementedError

@@ -96,6 +96,7 @@ class Predictor():
                 Y = self.coder.convertFromOneHot(model.predict(X)[0])
                 print(Y)
                 # Decode
+                Y = self.coder.removePadding(Y)
                 fixCodeFragment = self.coder.decode(Y, initialUnkList)
                 
                 #Verify?

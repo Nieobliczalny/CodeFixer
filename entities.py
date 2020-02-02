@@ -57,3 +57,11 @@ class FixData():
     
     def getLine(self):
         return self.line
+
+class SuggestionData():
+    def __init__(self, file, bug, bugCode, fixCode, verificationStatus):
+        self.file = file
+        self.bug = bug
+        self.bugCode = bugCode
+        self.fixCode = fixCode
+        self.verificationStatus = verificationStatus

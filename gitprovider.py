@@ -23,3 +23,6 @@ class GitProvider(vcsprovider.VCSProvider):
         blob = commit.tree[file]
         contents = blob.data_stream.read()
         return contents.decode(charset)
+
+    def applyChangeForFile(self, file):
+        self.repo.index.add([file])

@@ -22,7 +22,7 @@ class CodeChecker():
         #if len(config.customCheckers) > 0:
         #    checkers = '-d all -e {0}'.format(' -e '.join(config.customCheckers.split(',')))
         cmd = 'CodeChecker check {0} -e all -b "cd {1} && make {0}" -o {2}'.format(jobs, self.repo, config.getTmpDir())
-        self.runCmd(cmd)
+        return self.runCmd(cmd).decode(sys.stdout.encoding)
     
     def store(self, tag):
         cmd = 'CodeChecker store {0} -n {1} --tag {2}'.format(config.getTmpDir(), config.getCcRunName(), tag)
@@ -33,6 +33,12 @@ class CodeChecker():
             return self.nativeDiffResolved(baseRun, newRun)
         else:
             return self.customDiffResolved(baseRun, newRun, db)
+    
+    def diffNew(self, baseRun, newRun, db = None):
+        if True or config.ccUseNativeDiffResolved:
+            return self.nativeDiffNew(baseRun, newRun)
+        else:
+            return self.customDiffNew(baseRun, newRun, db)
     
     def nativeDiffResolved(self, baseRun, newRun):
         cmd = 'CodeChecker cmd diff -b {0} -n {1} --resolved -o json'.format(baseRun, newRun)
@@ -61,6 +67,34 @@ class CodeChecker():
         allBugsHashes = set([x[2] for x in allBugs])
         resolved = [{'reportId': hashToIdDict[x]} for x in list(allBugsHashes - uniqueHashes)]
         return resolved
+    
+    def nativeDiffNew(self, baseRun, newRun):
+        cmd = 'CodeChecker cmd diff -b {0} -n {1} --new -o json'.format(baseRun, newRun)
+        stdoutData = self.runCmd(cmd).decode(sys.stdout.encoding)
+        output = self.getDataAfterInfoLog(stdoutData)
+        out = []
+        try:
+            out = json.loads(output)
+        except json.decoder.JSONDecodeError:
+            pass
+        return out
+    
+    def customDiffNew(self, baseRun, newRun, db):
+        cmd = 'CodeChecker parse --print-steps {0}'.format(newRun)
+        stdoutData = self.runCmd(cmd).decode(sys.stdout.encoding)
+        lines = stdoutData.split("\n")
+        reportHashes = []
+        for line in lines:
+            if "Report hash" in line:
+                m = re.search('[0-9a-fA-F]{32}', line)
+                reportHashes.append(m.group(0))
+
+        uniqueHashes = set(reportHashes)
+        allBugs = db.getAllBugs()
+        hashToIdDict = dict([(x[2], x[0]) for x in allBugs])
+        allBugsHashes = set([x[2] for x in allBugs])
+        new = [{'reportId': hashToIdDict[x]} for x in list(uniqueHashes - allBugsHashes)]
+        return new
     
     def clean(self):
         cmd = 'cd {0} && make clean'.format(self.repo)
